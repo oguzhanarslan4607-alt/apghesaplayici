@@ -97,6 +97,32 @@
         .neutral-sapma { background-color: #bdbdbd; } 
         .warning-msg { color: #d32f2f; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; text-align: left;}
 
+        /* --- YASAL UYARI / NOT KUTUSU --- */
+        .disclaimer-box {
+            background-color: #fff8e1; /* Krem rengi */
+            border-left: 5px solid #ffb300; /* Turuncu sol çizgi */
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #5d4037;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .disclaimer-box h4 {
+            margin: 0 0 10px;
+            color: #e65100;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .disclaimer-box ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        .disclaimer-box li { margin-bottom: 5px; }
+        .disclaimer-box strong { color: #bf360c; }
+
         /* --- FOOTER / İMZA STİLLERİ --- */
         .footer-signature {
             text-align: center;
@@ -245,13 +271,28 @@
     </div>
 
     <div class="result-area">
-        <div style="color:#666; font-size:13px;">
+        <div style="color:#666; font-size:13px; flex:1;">
             Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
         </div>
-        <div style="text-align: center; width: 100%;">
+        <div style="text-align: center; min-width: 180px;">
             <div style="font-size: 16px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
             <div class="sapma-display neutral-sapma" id="finalSapma">0,00</div>
         </div>
+    </div>
+
+    <div class="disclaimer-box">
+        <h4>⚠️ ÖNEMLİ NOT</h4>
+        <p>
+            Paylaşılan veriler ve hesaplamalar, Merkez tarafından belirlenen mevcut vade sapması oranları baz alınarak hazırlanmıştır. 
+            Bu oranlar piyasa koşullarına veya merkez politikalarına göre değişiklik gösterebilir.
+        </p>
+        <p>Bu nedenle:</p>
+        <ul>
+            <li>Merkez oranlarında herhangi bir güncelleme yapılması durumunda, lütfen <strong>Muhasebe Departmanı</strong> ile irtibata geçiniz.</li>
+            <li>Verileri kullanırken güncelliğini teyit etmeniz ve değişen koşullara karşı dikkatli olmanız önem arz etmektedir.</li>
+            <li><strong>Vade Sapması oranı 29'un altına düşerse</strong> satışın girme olasılığı istisnai durumlar haricinde vardır. Bu tablo bilgi amaçlıdır.</li>
+        </ul>
+        <div style="margin-top:10px; font-style: italic; font-weight:600;">Bilgilerinize sunar, iyi çalışmalar dileriz.</div>
     </div>
 
     <div class="footer-signature">
@@ -477,20 +518,19 @@
         const leftCiro = parseTr('leftCiro');
         const rightCiro = parseTr('rightCiro');
 
-        // --- YENİ CİRO KONTROL MANTIĞI ---
+        // --- CİRO EŞİTLİK KONTROLÜ ---
         const targetInputVal = parseFloat(document.getElementById('targetCiro').value) || 0;
         const msgEl = document.getElementById('ciroStatusMsg');
         const rightCiroEl = document.getElementById('rightCiro');
 
-        // 0.1 kuruşluk tolerans ile kontrol et
+        // 0.1 tolerans ile kontrol
         if (Math.abs(targetInputVal - rightCiro) > 0.1) {
             msgEl.style.display = 'block';
-            rightCiroEl.style.color = '#d32f2f'; // Koyu Kırmızı
+            rightCiroEl.style.color = '#d32f2f';
         } else {
             msgEl.style.display = 'none';
-            rightCiroEl.style.color = '#333'; // Normal Siyah
+            rightCiroEl.style.color = '#333';
         }
-        // ---------------------------------
 
         if (leftCiro === 0) {
             document.getElementById('finalSapma').textContent = "0,00";
