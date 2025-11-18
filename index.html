@@ -2,46 +2,76 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vade Sapması Analizi (Final Versiyon)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vade Sapması Analizi (Mobil Uyumlu)</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; margin: 0; color: #333; }
-        .container { max-width: 1280px; margin: 0 auto; }
+        /* --- TEMEL AYARLAR --- */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; padding: 10px; margin: 0; color: #333; box-sizing: border-box; }
+        *, *:before, *:after { box-sizing: inherit; }
+        .container { max-width: 100%; margin: 0 auto; }
         
-        /* Üst Bar */
-        .top-bar { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; }
-        .input-group { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
-        .input-group label { font-weight: 700; color: #555; font-size: 14px; }
-        .top-bar input { padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; color: #333; text-align: center; font-weight: bold; transition: border-color 0.3s; }
-        .top-bar input:focus { border-color: #4a90e2; outline: none; }
-        #targetCiro { background-color: #e3f2fd; color: #0d47a1; border-color: #bbdefb; width: 150px; }
+        /* --- ÜST BAR --- */
+        .top-bar { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-end; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 200px; }
+        .input-group label { font-weight: 700; color: #555; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Ana Panel Yapısı */
-        .main-wrapper { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
-        .panel { flex: 1; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; min-width: 500px; display: flex; flex-direction: column; }
-        .panel h3 { margin: 0; padding: 15px; text-align: center; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
+        .top-bar input { 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            font-size: 16px; /* Mobilde zoom yapmaması için en az 16px */
+            color: #333; 
+            text-align: center; 
+            font-weight: bold; 
+            transition: border-color 0.3s; 
+            width: 100%;
+            -webkit-appearance: none; /* iOS gölgelerini kaldır */
+        }
+        .top-bar input:focus { border-color: #4a90e2; outline: none; background-color: #fff; }
+        #targetCiro { background-color: #eef6fc; color: #0d47a1; border-color: #bbdefb; }
+        
+        /* --- ANA PANEL YAPISI --- */
+        .main-wrapper { display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap; }
+        .panel { 
+            flex: 1; 
+            background-color: #fff; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            min-width: 300px; /* Çok daralmasın */
+        }
+        
+        .panel h3 { margin: 0; padding: 15px; text-align: center; font-size: 15px; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
         .panel-left h3 { background-color: #4a90e2; } 
         .panel-right h3 { background-color: #66bb6a; } 
 
-        /* Tablo Stilleri */
-        .table-container { padding: 15px 10px; overflow-x: auto; max-height: 500px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background-color: #f8f9fa; color: #555; padding: 10px; text-align: center; font-weight: 600; border-bottom: 2px solid #eee; position: sticky; top: 0; background: #f8f9fa; z-index: 10; }
-        td { padding: 12px 5px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        /* --- TABLO --- */
+        .table-container { 
+            padding: 0; 
+            overflow-x: auto; /* Mobilde yatay kaydırma */
+            -webkit-overflow-scrolling: touch; /* iOS akıcı kaydırma */
+            max-height: 400px; 
+            overflow-y: auto; 
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; /* Tablo küçülmesin, kaydırılsın */ }
+        th { background-color: #f8f9fa; color: #555; padding: 12px 8px; text-align: center; font-weight: 700; border-bottom: 2px solid #eee; position: sticky; top: 0; background: #f8f9fa; z-index: 10; white-space: nowrap; }
+        td { padding: 8px 5px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
         
-        /* Input Alanları */
-        input[type="number"].input-tutar { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; text-align: right; font-weight: 600; box-sizing: border-box; }
-        input[type="date"].input-vade { width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center; box-sizing: border-box; font-family: inherit; }
-        .readonly-input { background-color: #f5f5f5; color: #777; border: 1px solid #eee !important; cursor: not-allowed; }
+        /* Tablo İçi Inputlar */
+        input[type="number"].input-tutar { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; text-align: right; font-weight: 600; font-size: 14px; }
+        input[type="date"].input-vade { width: 100%; padding: 7px; border: 1px solid #ddd; border-radius: 6px; text-align: center; font-family: inherit; font-size: 13px; -webkit-appearance: none; }
+        .readonly-input { background-color: #f9f9f9; color: #777; border: 1px solid #eee !important; cursor: default; }
 
-        /* PEŞİNAT ETİKETİ TASARIMI */
-        .input-wrapper { position: relative; }
+        /* PEŞİNAT ETİKETİ */
+        .input-wrapper { position: relative; margin-top: 5px; } /* Badge için alan */
         .pesinat-badge {
             position: absolute;
-            top: -18px;
+            top: -20px;
             left: 0;
             font-size: 10px;
-            background-color: #ff9800; /* Turuncu Renk */
+            background-color: #ff9800;
             color: white;
             padding: 2px 6px;
             border-radius: 4px 4px 0 0;
@@ -50,35 +80,53 @@
             box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
             display: none; 
         }
-        /* Sadece "first-row" class'ına sahip satırda badge görünsün */
         tr.first-row .pesinat-badge { display: block; }
-        tr.first-row td { padding-top: 15px; } /* Etiket için yer aç */
+        tr.first-row td { padding-top: 15px; }
 
-        /* Butonlar */
-        .btn-delete { background-color: #ff5252; color: white; border: none; cursor: pointer; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .btn-delete:hover { background-color: #d32f2f; }
+        /* BUTONLAR */
+        .btn-delete { 
+            background-color: #ff5252; color: white; border: none; cursor: pointer; 
+            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 2px 5px rgba(255, 82, 82, 0.3); margin: 0 auto;
+        }
         
-        .btn-container { display: flex; gap: 5px; padding: 0 10px; }
-        .btn-add { flex: 3; background-color: #f1f3f4; color: #333; border: 1px dashed #999; padding: 10px; margin: 10px 0; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .btn-add:hover { background-color: #e0e0e0; border-color: #666; }
-        .btn-clear { flex: 1; background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 10px; margin: 10px 0; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .btn-clear:hover { background-color: #ffe0b2; }
+        .btn-container { display: flex; gap: 10px; padding: 10px 15px; }
+        .btn-add { flex: 2; background-color: #f1f3f4; color: #333; border: 1px solid #ccc; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; touch-action: manipulation; }
+        .btn-clear { flex: 1; background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .btn-add:active, .btn-clear:active { transform: scale(0.98); opacity: 0.8; }
 
-        /* Özet ve Sonuç Alanları */
-        .summary-box { background-color: #f9fafb; padding: 15px; border-top: 1px solid #eee; font-size: 14px; margin-top: auto; }
-        .row-sum { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .row-sum span:first-child { color: #666; }
-        .val { font-weight: bold; color: #333; }
-        .avg-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; color: #4a90e2; font-size: 15px; font-weight: 700; }
+        /* ÖZET VE SONUÇ */
+        .summary-box { background-color: #f8f9fa; padding: 15px; border-top: 1px solid #eee; font-size: 13px; margin-top: auto; }
+        .row-sum { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .val { font-weight: bold; color: #333; font-family: monospace; font-size: 14px; }
+        .avg-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; color: #4a90e2; font-size: 14px; font-weight: 800; }
         
-        .result-area { margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .sapma-display { font-size: 32px; font-weight: 800; padding: 10px 30px; border-radius: 8px; min-width: 120px; text-align: center; color: #fff; }
+        .result-area { 
+            margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; gap: 20px;
+        }
+        .sapma-display { font-size: 28px; font-weight: 800; padding: 10px 20px; border-radius: 8px; min-width: 100px; text-align: center; color: #fff; }
         
-        .positive-sapma { background-color: #ef5350; } /* Kırmızı */
-        .negative-sapma { background-color: #66bb6a; } /* Yeşil */
-        .neutral-sapma { background-color: #bdbdbd; } /* Gri */
+        .positive-sapma { background-color: #ef5350; } 
+        .negative-sapma { background-color: #66bb6a; } 
+        .neutral-sapma { background-color: #bdbdbd; } 
         
-        .warning-msg { color: #d32f2f; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; }
+        .warning-msg { color: #d32f2f; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; text-align: left;}
+
+        /* --- MOBİL İÇİN ÖZEL (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; } /* Yan yana yerine alt alta */
+            .panel { width: 100%; min-width: auto; }
+            
+            .result-area { 
+                flex-direction: column; /* Sonuç kutusunu dikey yap */
+                text-align: center; 
+                padding: 15px;
+            }
+            .sapma-display { width: 100%; margin-top: 10px; }
+            .top-bar { flex-direction: column; align-items: stretch; }
+            .top-bar input { font-size: 18px; padding: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -91,7 +139,7 @@
         </div>
         <div class="input-group">
             <label>FATURA TUTARI (CİRO)</label>
-            <input type="number" id="targetCiro" placeholder="Örn: 24000">
+            <input type="number" id="targetCiro" placeholder="Örn: 34000">
             <div id="ciroWarning" class="warning-msg">Bu tutar için tanımlı plan yok!</div>
         </div>
     </div>
@@ -102,14 +150,14 @@
             <div class="table-container">
                 <table id="tableLeft">
                     <thead>
-                        <tr><th style="width:30px;">No</th><th>Tutar</th><th>Vade Tarihi</th><th>Gün</th><th>Vade Çarpanı</th></tr>
+                        <tr><th style="width:30px;">No</th><th>Tutar</th><th>Vade Tarihi</th><th>Gün</th><th>Çarpan</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
             <div class="summary-box">
                 <div class="row-sum"><span>Toplam Ciro:</span><span class="val" id="leftCiro">0,00</span></div>
-                <div class="row-sum"><span>Vade Çarpan Toplamı:</span><span class="val" id="leftGunTutar">0,00</span></div>
+                <div class="row-sum"><span>Vade Çarpan Top:</span><span class="val" id="leftGunTutar">0,00</span></div>
                 <div class="row-sum avg-row"><span>Ort. Vade Günü:</span><span class="val" id="leftAvg">0,00</span></div>
             </div>
         </div>
@@ -125,65 +173,49 @@
                             <th>Tutar</th>
                             <th>Vade Tarihi</th>
                             <th>Gün</th>
-                            <th>Vade Çarpanı</th>
+                            <th>Çarpan</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
             <div class="btn-container">
-                <button class="btn-add" onclick="addManualRow()">+ Ödeme / Senet Ekle</button>
+                <button class="btn-add" onclick="addManualRow()">+ Ödeme Ekle</button>
                 <button class="btn-clear" onclick="clearRightTable()">Temizle</button>
             </div>
             <div class="summary-box">
                 <div class="row-sum"><span>Toplam Ciro:</span><span class="val" id="rightCiro">0,00</span></div>
-                <div class="row-sum"><span>Vade Çarpan Toplamı:</span><span class="val" id="rightGunTutar">0,00</span></div>
+                <div class="row-sum"><span>Vade Çarpan Top:</span><span class="val" id="rightGunTutar">0,00</span></div>
                 <div class="row-sum avg-row" style="color: #66bb6a;"><span>Ort. Vade Günü:</span><span class="val" id="rightAvg">0,00</span></div>
             </div>
         </div>
     </div>
 
     <div class="result-area">
-        <div style="color:#666; font-size:14px; max-width: 600px;">
-            <strong>Nasıl Çalışır?</strong><br>
-            1. Sol tarafta tanımlı tutar (Örn: 24.000, 30.000, 36.000 vb.) girildiğinde hedef plan oluşur.<br>
-            2. Sağ tarafta "Ödeme Ekle" butonuna basarak senetleri giriniz.<br>
-            3. İlk satır <b>Peşinat</b> olur, sonraki senetler 1, 2, 3 diye numaralanır.
+        <div style="color:#666; font-size:13px;">
+            <strong>Bilgi:</strong> Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
         </div>
-        <div style="text-align: right;">
-            <div style="font-size: 18px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
+        <div style="text-align: center; width: 100%;">
+            <div style="font-size: 16px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
             <div class="sapma-display neutral-sapma" id="finalSapma">0,00</div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- TÜM CİRO KURALLARI VERİTABANI ---
+    // CİRO VE TAKSİT KURALLARI (GÜNCEL)
     const RULES = {
-        // Düşük ve Orta Segment
-        24000: 2,
-        24500: 2,
-        26000: 5,
-        27000: 5,
-        28000: 8,
-        29000: 8,
-        30000: 13,
-        31000: 13,
-        32000: 16,
-        33000: 16,
-        34000: 19,
-        35000: 19,
+        24000: 2, 24500: 2,
+        26000: 5, 27000: 5,
+        28000: 8, 29000: 8,
+        30000: 13, 31000: 13,
+        32000: 16, 33000: 16,
+        34000: 19, 35000: 19,
         36000: 21,
-        
-        // Yüksek Segment
-        63000: 2,
-        70000: 6,
-        75000: 9,
-        80000: 13,
-        84000: 16
+        63000: 2, 70000: 6,
+        75000: 9, 80000: 13, 84000: 16
     };
 
-    // Yardımcı Fonksiyonlar
     function formatNum(num) { return num.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
     
     function diffDays(d1, d2) {
@@ -194,16 +226,13 @@
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     }
 
-    // Sol Panel Tarih Hesaplayıcı (Tam Ay Ekleme)
     function addMonths(dateStr, months) {
         let d = new Date(dateStr);
         d.setMonth(d.getMonth() + months);
-        // Gün kaymasını engelle (Örn: 31 Ocak + 1 Ay -> 28 Şubat)
         if (d.getDate() !== new Date(dateStr).getDate()) d.setDate(0);
         return d.toISOString().split('T')[0];
     }
 
-    // Sağ Panel Tarih Hesaplayıcı (Ayın 1. Günü)
     function getNextMonthFirstDay(baseDateStr) {
         let d = new Date(baseDateStr);
         d.setMonth(d.getMonth() + 1); 
@@ -213,7 +242,6 @@
         return `${year}-${month}-01`;
     }
 
-    // SOL PANELİ OLUŞTURMA (OTOMATİK)
     function generateTargetPlan() {
         const ciroInput = parseFloat(document.getElementById('targetCiro').value);
         const refDate = document.getElementById('satisTarihi').value;
@@ -227,7 +255,6 @@
             document.getElementById('leftGunTutar').textContent = "0,00";
             document.getElementById('leftAvg').textContent = "0,00";
             calculateFinalResult(); 
-            // Uyarı mesajı kontrolü
             if(ciroInput && !RULES[ciroInput]) warningEl.style.display = 'block';
             else warningEl.style.display = 'none';
             return;
@@ -240,7 +267,6 @@
 
         for (let i = 0; i < installmentCount; i++) {
             let amount = parseFloat(baseAmount.toFixed(2));
-            // Son taksitte kuruş farkını düzelt
             if (i === installmentCount - 1) amount = ciroInput - currentTotal;
             currentTotal += amount;
 
@@ -254,24 +280,21 @@
                 <td><input type="text" class="input-tutar readonly-input" value="${formatNum(amount)}" readonly></td>
                 <td><input type="date" class="input-vade readonly-input" value="${vadeDate}" readonly></td>
                 <td class="cell-gun" style="text-align:center;">${gun}</td>
-                <td class="cell-gun-tutar" style="text-align:right;">${formatNum(gunTutar)}</td>
+                <td class="cell-gun-tutar" style="text-align:right; font-size:12px;">${formatNum(gunTutar)}</td>
             `;
             tbody.appendChild(tr);
         }
         calculateSummary('tableLeft', 'leftCiro', 'leftGunTutar', 'leftAvg', true);
     }
 
-    // SAĞ PANEL: NUMARALANDIRMA VE PEŞİNAT MANTIĞI
     function updateRowNumbers() {
         const rows = document.querySelectorAll('#tableRight tbody tr');
         rows.forEach((row, index) => {
             const numCell = row.querySelector('.row-num');
             if (index === 0) {
-                // 1. SATIR = PEŞİNAT
                 if(numCell) numCell.textContent = "-"; 
-                row.classList.add('first-row'); // CSS ile Badge'i gösterir
+                row.classList.add('first-row');
             } else {
-                // SONRAKİ SATIRLAR = TAKSİT (1, 2, 3...)
                 if(numCell) numCell.textContent = index; 
                 row.classList.remove('first-row');
             }
@@ -286,10 +309,8 @@
         let targetDate;
         
         if (rows.length === 0) {
-            // İlk satırsa tarih referans tarihiyle aynı
             targetDate = refDate;
         } else {
-            // Değilse bir önceki tarihin sonraki ayının 1'i
             const lastInput = rows[rows.length - 1].querySelector('.input-vade');
             const baseDate = (lastInput && lastInput.value) ? lastInput.value : refDate;
             targetDate = getNextMonthFirstDay(baseDate);
@@ -307,7 +328,7 @@
             </td>
             <td><input type="date" class="input-vade" value="${targetDate}" onchange="calculateRightSide()"></td>
             <td class="cell-gun" style="text-align:center; color:#666;">0</td>
-            <td class="cell-gun-tutar" style="text-align:right; color:#666;">0,00</td>
+            <td class="cell-gun-tutar" style="text-align:right; color:#666; font-size:12px;">0,00</td>
         `;
         tbody.appendChild(tr);
         updateRowNumbers();
@@ -316,7 +337,7 @@
 
     function deleteRow(btn) {
         btn.closest('tr').remove();
-        updateRowNumbers(); // Numaraları güncelle
+        updateRowNumbers();
         calculateRightSide();
     }
 
@@ -329,7 +350,6 @@
         calculateSummary('tableRight', 'rightCiro', 'rightGunTutar', 'rightAvg', false);
     }
 
-    // ORTAK HESAPLAMA MOTORU
     function calculateSummary(tblId, ciroId, gtId, avgId, isLocked) {
         const st = document.getElementById('satisTarihi').value;
         let totCiro = 0, totGT = 0;
@@ -359,7 +379,6 @@
         calculateFinalResult();
     }
 
-    // SAPMA HESAPLAMA
     function calculateFinalResult() {
         const parseTr = (id) => parseFloat(document.getElementById(id).textContent.replace(/\./g, '').replace(',', '.')) || 0;
         const leftAvg = parseTr('leftAvg');
@@ -381,7 +400,6 @@
         else el.classList.add('negative-sapma');
     }
 
-    // BAŞLANGIÇ AYARLARI
     window.onload = function() {
         document.getElementById('satisTarihi').valueAsDate = new Date();
         document.getElementById('targetCiro').addEventListener('input', generateTargetPlan);
