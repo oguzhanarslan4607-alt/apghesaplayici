@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vade Sapması Analizi (Final Versiyon)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; margin: 0; color: #333; }
+        .container { max-width: 1280px; margin: 0 auto; }
+        
+        /* Üst Bar */
+        .top-bar { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; }
+        .input-group { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+        .input-group label { font-weight: 700; color: #555; font-size: 14px; }
+        .top-bar input { padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; color: #333; text-align: center; font-weight: bold; transition: border-color 0.3s; }
+        .top-bar input:focus { border-color: #4a90e2; outline: none; }
+        #targetCiro { background-color: #e3f2fd; color: #0d47a1; border-color: #bbdefb; width: 150px; }
+        
+        /* Ana Panel Yapısı */
+        .main-wrapper { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+        .panel { flex: 1; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; min-width: 500px; display: flex; flex-direction: column; }
+        .panel h3 { margin: 0; padding: 15px; text-align: center; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
+        .panel-left h3 { background-color: #4a90e2; } 
+        .panel-right h3 { background-color: #66bb6a; } 
+
+        /* Tablo Stilleri */
+        .table-container { padding: 15px 10px; overflow-x: auto; max-height: 500px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background-color: #f8f9fa; color: #555; padding: 10px; text-align: center; font-weight: 600; border-bottom: 2px solid #eee; position: sticky; top: 0; background: #f8f9fa; z-index: 10; }
+        td { padding: 12px 5px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        
+        /* Input Alanları */
+        input[type="number"].input-tutar { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; text-align: right; font-weight: 600; box-sizing: border-box; }
+        input[type="date"].input-vade { width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 4px; text-align: center; box-sizing: border-box; font-family: inherit; }
+        .readonly-input { background-color: #f5f5f5; color: #777; border: 1px solid #eee !important; cursor: not-allowed; }
+
+        /* PEŞİNAT ETİKETİ TASARIMI */
+        .input-wrapper { position: relative; }
+        .pesinat-badge {
+            position: absolute;
+            top: -18px;
+            left: 0;
+            font-size: 10px;
+            background-color: #ff9800; /* Turuncu Renk */
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px 4px 0 0;
+            font-weight: bold;
+            z-index: 5;
+            box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
+            display: none; 
+        }
+        /* Sadece "first-row" class'ına sahip satırda badge görünsün */
+        tr.first-row .pesinat-badge { display: block; }
+        tr.first-row td { padding-top: 15px; } /* Etiket için yer aç */
+
+        /* Butonlar */
+        .btn-delete { background-color: #ff5252; color: white; border: none; cursor: pointer; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .btn-delete:hover { background-color: #d32f2f; }
+        
+        .btn-container { display: flex; gap: 5px; padding: 0 10px; }
+        .btn-add { flex: 3; background-color: #f1f3f4; color: #333; border: 1px dashed #999; padding: 10px; margin: 10px 0; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-add:hover { background-color: #e0e0e0; border-color: #666; }
+        .btn-clear { flex: 1; background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 10px; margin: 10px 0; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-clear:hover { background-color: #ffe0b2; }
+
+        /* Özet ve Sonuç Alanları */
+        .summary-box { background-color: #f9fafb; padding: 15px; border-top: 1px solid #eee; font-size: 14px; margin-top: auto; }
+        .row-sum { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .row-sum span:first-child { color: #666; }
+        .val { font-weight: bold; color: #333; }
+        .avg-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; color: #4a90e2; font-size: 15px; font-weight: 700; }
+        
+        .result-area { margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .sapma-display { font-size: 32px; font-weight: 800; padding: 10px 30px; border-radius: 8px; min-width: 120px; text-align: center; color: #fff; }
+        
+        .positive-sapma { background-color: #ef5350; } /* Kırmızı */
+        .negative-sapma { background-color: #66bb6a; } /* Yeşil */
+        .neutral-sapma { background-color: #bdbdbd; } /* Gri */
+        
+        .warning-msg { color: #d32f2f; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <div class="input-group">
+            <label>FATURA / REFERANS TARİHİ</label>
+            <input type="date" id="satisTarihi">
+        </div>
+        <div class="input-group">
+            <label>FATURA TUTARI (CİRO)</label>
+            <input type="number" id="targetCiro" placeholder="Örn: 24000">
+            <div id="ciroWarning" class="warning-msg">Bu tutar için tanımlı plan yok!</div>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="panel panel-left">
+            <h3>OLMASI GEREKEN (HEDEF)</h3>
+            <div class="table-container">
+                <table id="tableLeft">
+                    <thead>
+                        <tr><th style="width:30px;">No</th><th>Tutar</th><th>Vade Tarihi</th><th>Gün</th><th>Vade Çarpanı</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="summary-box">
+                <div class="row-sum"><span>Toplam Ciro:</span><span class="val" id="leftCiro">0,00</span></div>
+                <div class="row-sum"><span>Vade Çarpan Toplamı:</span><span class="val" id="leftGunTutar">0,00</span></div>
+                <div class="row-sum avg-row"><span>Ort. Vade Günü:</span><span class="val" id="leftAvg">0,00</span></div>
+            </div>
+        </div>
+
+        <div class="panel panel-right">
+            <h3>GERÇEKLEŞEN (OLAN)</h3>
+            <div class="table-container">
+                <table id="tableRight">
+                    <thead>
+                        <tr>
+                            <th style="width:30px;">Sil</th>
+                            <th style="width:30px;">No</th>
+                            <th>Tutar</th>
+                            <th>Vade Tarihi</th>
+                            <th>Gün</th>
+                            <th>Vade Çarpanı</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="btn-container">
+                <button class="btn-add" onclick="addManualRow()">+ Ödeme / Senet Ekle</button>
+                <button class="btn-clear" onclick="clearRightTable()">Temizle</button>
+            </div>
+            <div class="summary-box">
+                <div class="row-sum"><span>Toplam Ciro:</span><span class="val" id="rightCiro">0,00</span></div>
+                <div class="row-sum"><span>Vade Çarpan Toplamı:</span><span class="val" id="rightGunTutar">0,00</span></div>
+                <div class="row-sum avg-row" style="color: #66bb6a;"><span>Ort. Vade Günü:</span><span class="val" id="rightAvg">0,00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-area">
+        <div style="color:#666; font-size:14px; max-width: 600px;">
+            <strong>Nasıl Çalışır?</strong><br>
+            1. Sol tarafta tanımlı tutar (Örn: 24.000, 30.000, 36.000 vb.) girildiğinde hedef plan oluşur.<br>
+            2. Sağ tarafta "Ödeme Ekle" butonuna basarak senetleri giriniz.<br>
+            3. İlk satır <b>Peşinat</b> olur, sonraki senetler 1, 2, 3 diye numaralanır.
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 18px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
+            <div class="sapma-display neutral-sapma" id="finalSapma">0,00</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- TÜM CİRO KURALLARI VERİTABANI ---
+    const RULES = {
+        // Düşük ve Orta Segment
+        24000: 2,
+        24500: 2,
+        26000: 5,
+        27000: 5,
+        28000: 8,
+        29000: 8,
+        30000: 13,
+        31000: 13,
+        32000: 16,
+        33000: 16,
+        34000: 19,
+        35000: 19,
+        36000: 21,
+        
+        // Yüksek Segment
+        63000: 2,
+        70000: 6,
+        75000: 9,
+        80000: 13,
+        84000: 16
+    };
+
+    // Yardımcı Fonksiyonlar
+    function formatNum(num) { return num.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    
+    function diffDays(d1, d2) {
+        if(!d1 || !d2) return 0;
+        const date1 = new Date(d1);
+        const date2 = new Date(d2);
+        const diffTime = date2 - date1;
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    }
+
+    // Sol Panel Tarih Hesaplayıcı (Tam Ay Ekleme)
+    function addMonths(dateStr, months) {
+        let d = new Date(dateStr);
+        d.setMonth(d.getMonth() + months);
+        // Gün kaymasını engelle (Örn: 31 Ocak + 1 Ay -> 28 Şubat)
+        if (d.getDate() !== new Date(dateStr).getDate()) d.setDate(0);
+        return d.toISOString().split('T')[0];
+    }
+
+    // Sağ Panel Tarih Hesaplayıcı (Ayın 1. Günü)
+    function getNextMonthFirstDay(baseDateStr) {
+        let d = new Date(baseDateStr);
+        d.setMonth(d.getMonth() + 1); 
+        d.setDate(1);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}-01`;
+    }
+
+    // SOL PANELİ OLUŞTURMA (OTOMATİK)
+    function generateTargetPlan() {
+        const ciroInput = parseFloat(document.getElementById('targetCiro').value);
+        const refDate = document.getElementById('satisTarihi').value;
+        const tbody = document.querySelector('#tableLeft tbody');
+        const warningEl = document.getElementById('ciroWarning');
+        
+        tbody.innerHTML = ""; 
+
+        if (!ciroInput || !refDate || !RULES[ciroInput]) {
+            document.getElementById('leftCiro').textContent = "0,00";
+            document.getElementById('leftGunTutar').textContent = "0,00";
+            document.getElementById('leftAvg').textContent = "0,00";
+            calculateFinalResult(); 
+            // Uyarı mesajı kontrolü
+            if(ciroInput && !RULES[ciroInput]) warningEl.style.display = 'block';
+            else warningEl.style.display = 'none';
+            return;
+        }
+        warningEl.style.display = 'none';
+
+        const installmentCount = RULES[ciroInput];
+        const baseAmount = ciroInput / installmentCount;
+        let currentTotal = 0;
+
+        for (let i = 0; i < installmentCount; i++) {
+            let amount = parseFloat(baseAmount.toFixed(2));
+            // Son taksitte kuruş farkını düzelt
+            if (i === installmentCount - 1) amount = ciroInput - currentTotal;
+            currentTotal += amount;
+
+            const vadeDate = (i === 0) ? refDate : addMonths(refDate, i);
+            const gun = diffDays(refDate, vadeDate);
+            const gunTutar = amount * gun;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align:center; font-weight:bold; color:#777;">${i+1}</td>
+                <td><input type="text" class="input-tutar readonly-input" value="${formatNum(amount)}" readonly></td>
+                <td><input type="date" class="input-vade readonly-input" value="${vadeDate}" readonly></td>
+                <td class="cell-gun" style="text-align:center;">${gun}</td>
+                <td class="cell-gun-tutar" style="text-align:right;">${formatNum(gunTutar)}</td>
+            `;
+            tbody.appendChild(tr);
+        }
+        calculateSummary('tableLeft', 'leftCiro', 'leftGunTutar', 'leftAvg', true);
+    }
+
+    // SAĞ PANEL: NUMARALANDIRMA VE PEŞİNAT MANTIĞI
+    function updateRowNumbers() {
+        const rows = document.querySelectorAll('#tableRight tbody tr');
+        rows.forEach((row, index) => {
+            const numCell = row.querySelector('.row-num');
+            if (index === 0) {
+                // 1. SATIR = PEŞİNAT
+                if(numCell) numCell.textContent = "-"; 
+                row.classList.add('first-row'); // CSS ile Badge'i gösterir
+            } else {
+                // SONRAKİ SATIRLAR = TAKSİT (1, 2, 3...)
+                if(numCell) numCell.textContent = index; 
+                row.classList.remove('first-row');
+            }
+        });
+    }
+
+    function addManualRow() {
+        const tbody = document.querySelector('#tableRight tbody');
+        const rows = tbody.querySelectorAll('tr');
+        const refDate = document.getElementById('satisTarihi').value;
+        
+        let targetDate;
+        
+        if (rows.length === 0) {
+            // İlk satırsa tarih referans tarihiyle aynı
+            targetDate = refDate;
+        } else {
+            // Değilse bir önceki tarihin sonraki ayının 1'i
+            const lastInput = rows[rows.length - 1].querySelector('.input-vade');
+            const baseDate = (lastInput && lastInput.value) ? lastInput.value : refDate;
+            targetDate = getNextMonthFirstDay(baseDate);
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="text-align:center;"><button class="btn-delete" onclick="deleteRow(this)">✕</button></td>
+            <td class="row-num" style="text-align:center; font-weight:bold; color:#555;"></td>
+            <td style="position:relative;">
+                <div class="input-wrapper">
+                    <span class="pesinat-badge">PEŞİNAT</span>
+                    <input type="number" class="input-tutar" value="0" step="0.01" oninput="calculateRightSide()">
+                </div>
+            </td>
+            <td><input type="date" class="input-vade" value="${targetDate}" onchange="calculateRightSide()"></td>
+            <td class="cell-gun" style="text-align:center; color:#666;">0</td>
+            <td class="cell-gun-tutar" style="text-align:right; color:#666;">0,00</td>
+        `;
+        tbody.appendChild(tr);
+        updateRowNumbers();
+        calculateRightSide();
+    }
+
+    function deleteRow(btn) {
+        btn.closest('tr').remove();
+        updateRowNumbers(); // Numaraları güncelle
+        calculateRightSide();
+    }
+
+    function clearRightTable() {
+        document.querySelector('#tableRight tbody').innerHTML = "";
+        calculateRightSide();
+    }
+
+    function calculateRightSide() {
+        calculateSummary('tableRight', 'rightCiro', 'rightGunTutar', 'rightAvg', false);
+    }
+
+    // ORTAK HESAPLAMA MOTORU
+    function calculateSummary(tblId, ciroId, gtId, avgId, isLocked) {
+        const st = document.getElementById('satisTarihi').value;
+        let totCiro = 0, totGT = 0;
+        
+        document.querySelectorAll(`#${tblId} tbody tr`).forEach(row => {
+            let tutar = 0;
+            if (isLocked) {
+                const rawVal = row.querySelector('.input-tutar').value; 
+                tutar = parseFloat(rawVal.replace(/\./g, '').replace(',', '.'));
+            } else {
+                tutar = parseFloat(row.querySelector('.input-tutar').value) || 0;
+            }
+            const vade = row.querySelector('.input-vade').value;
+            const gun = (st && vade) ? diffDays(st, vade) : 0;
+            const gt = tutar * gun;
+            
+            row.querySelector('.cell-gun').textContent = gun;
+            row.querySelector('.cell-gun-tutar').textContent = formatNum(gt);
+            totCiro += tutar;
+            totGT += gt;
+        });
+        
+        document.getElementById(ciroId).textContent = formatNum(totCiro);
+        document.getElementById(gtId).textContent = formatNum(totGT);
+        let avg = totCiro > 0.1 ? totGT / totCiro : 0;
+        document.getElementById(avgId).textContent = formatNum(avg);
+        calculateFinalResult();
+    }
+
+    // SAPMA HESAPLAMA
+    function calculateFinalResult() {
+        const parseTr = (id) => parseFloat(document.getElementById(id).textContent.replace(/\./g, '').replace(',', '.')) || 0;
+        const leftAvg = parseTr('leftAvg');
+        const rightAvg = parseTr('rightAvg');
+        const leftCiro = parseTr('leftCiro');
+
+        if (leftCiro === 0) {
+            document.getElementById('finalSapma').textContent = "0,00";
+            document.getElementById('finalSapma').className = "sapma-display neutral-sapma";
+            return;
+        }
+
+        const sapma = rightAvg - leftAvg;
+        const el = document.getElementById('finalSapma');
+        el.textContent = formatNum(sapma);
+        el.className = 'sapma-display';
+        if (Math.abs(sapma) < 0.1) el.classList.add('neutral-sapma');
+        else if (sapma > 0) el.classList.add('positive-sapma');
+        else el.classList.add('negative-sapma');
+    }
+
+    // BAŞLANGIÇ AYARLARI
+    window.onload = function() {
+        document.getElementById('satisTarihi').valueAsDate = new Date();
+        document.getElementById('targetCiro').addEventListener('input', generateTargetPlan);
+        document.getElementById('satisTarihi').addEventListener('change', () => {
+            generateTargetPlan();
+            calculateRightSide();
+        });
+    };
+</script>
+</body>
+</html>
