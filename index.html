@@ -3,126 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vade Sapması Analizi (Mobil Uyumlu)</title>
+    <title>Vade Sapması Analizi (By_Oğuz)</title>
     <style>
         /* --- TEMEL AYARLAR --- */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; padding: 10px; margin: 0; color: #333; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; padding: 0; margin: 0; color: #333; box-sizing: border-box; height: 100vh; }
         *, *:before, *:after { box-sizing: inherit; }
-        .container { max-width: 100%; margin: 0 auto; }
         
-        /* --- ÜST BAR --- */
+        /* --- GİRİŞ EKRANI --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #4a90e2, #0056b3);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-box {
+            background: white; padding: 40px 30px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;
+            width: 90%; max-width: 400px;
+        }
+        .login-box h2 { margin: 0 0 20px; color: #333; }
+        .login-input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 2px solid #eee; border-radius: 8px; font-size: 16px;
+        }
+        .login-input:focus { border-color: #4a90e2; outline: none; }
+        .login-btn {
+            width: 100%; padding: 12px; background-color: #4a90e2; color: white;
+            border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+            transition: background 0.3s;
+        }
+        .login-btn:hover { background-color: #357abd; }
+        .remember-me {
+            display: flex; align-items: center; justify-content: flex-start;
+            margin-bottom: 20px; font-size: 14px; color: #666;
+        }
+        .remember-me input { margin-right: 10px; width: 18px; height: 18px; }
+        .error-msg { color: #ef5350; margin-bottom: 15px; font-size: 14px; display: none; font-weight: bold; }
+
+        /* --- UYGULAMA KAPSAYICISI --- */
+        #app-container { display: none; padding: 20px; max-width: 1280px; margin: 0 auto; padding-bottom: 80px; /* Footer için boşluk */ }
+
+        /* --- HEADER --- */
+        .header-actions { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .btn-logout { background: #ff5252; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; }
+
+        /* --- TOP BAR --- */
         .top-bar { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-end; }
         .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 200px; }
         .input-group label { font-weight: 700; color: #555; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .top-bar input { 
-            padding: 12px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 8px; 
-            font-size: 16px; /* Mobilde zoom yapmaması için en az 16px */
-            color: #333; 
-            text-align: center; 
-            font-weight: bold; 
-            transition: border-color 0.3s; 
-            width: 100%;
-            -webkit-appearance: none; /* iOS gölgelerini kaldır */
-        }
+        .top-bar input { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; color: #333; text-align: center; font-weight: bold; transition: border-color 0.3s; width: 100%; -webkit-appearance: none; }
         .top-bar input:focus { border-color: #4a90e2; outline: none; background-color: #fff; }
         #targetCiro { background-color: #eef6fc; color: #0d47a1; border-color: #bbdefb; }
         
-        /* --- ANA PANEL YAPISI --- */
+        /* --- PANELLER --- */
         .main-wrapper { display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap; }
-        .panel { 
-            flex: 1; 
-            background-color: #fff; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            min-width: 300px; /* Çok daralmasın */
-        }
-        
+        .panel { flex: 1; background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; min-width: 300px; }
         .panel h3 { margin: 0; padding: 15px; text-align: center; font-size: 15px; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
         .panel-left h3 { background-color: #4a90e2; } 
         .panel-right h3 { background-color: #66bb6a; } 
 
         /* --- TABLO --- */
-        .table-container { 
-            padding: 0; 
-            overflow-x: auto; /* Mobilde yatay kaydırma */
-            -webkit-overflow-scrolling: touch; /* iOS akıcı kaydırma */
-            max-height: 400px; 
-            overflow-y: auto; 
-        }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; /* Tablo küçülmesin, kaydırılsın */ }
+        .table-container { padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
         th { background-color: #f8f9fa; color: #555; padding: 12px 8px; text-align: center; font-weight: 700; border-bottom: 2px solid #eee; position: sticky; top: 0; background: #f8f9fa; z-index: 10; white-space: nowrap; }
         td { padding: 8px 5px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
         
-        /* Tablo İçi Inputlar */
         input[type="number"].input-tutar { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; text-align: right; font-weight: 600; font-size: 14px; }
         input[type="date"].input-vade { width: 100%; padding: 7px; border: 1px solid #ddd; border-radius: 6px; text-align: center; font-family: inherit; font-size: 13px; -webkit-appearance: none; }
         .readonly-input { background-color: #f9f9f9; color: #777; border: 1px solid #eee !important; cursor: default; }
 
-        /* PEŞİNAT ETİKETİ */
-        .input-wrapper { position: relative; margin-top: 5px; } /* Badge için alan */
-        .pesinat-badge {
-            position: absolute;
-            top: -20px;
-            left: 0;
-            font-size: 10px;
-            background-color: #ff9800;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px 4px 0 0;
-            font-weight: bold;
-            z-index: 5;
-            box-shadow: 0 -1px 2px rgba(0,0,0,0.1);
-            display: none; 
-        }
+        .input-wrapper { position: relative; margin-top: 5px; }
+        .pesinat-badge { position: absolute; top: -20px; left: 0; font-size: 10px; background-color: #ff9800; color: white; padding: 2px 6px; border-radius: 4px 4px 0 0; font-weight: bold; z-index: 5; box-shadow: 0 -1px 2px rgba(0,0,0,0.1); display: none; }
         tr.first-row .pesinat-badge { display: block; }
         tr.first-row td { padding-top: 15px; }
 
-        /* BUTONLAR */
-        .btn-delete { 
-            background-color: #ff5252; color: white; border: none; cursor: pointer; 
-            width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 2px 5px rgba(255, 82, 82, 0.3); margin: 0 auto;
-        }
-        
+        /* --- BUTONLAR --- */
+        .btn-delete { background-color: #ff5252; color: white; border: none; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(255, 82, 82, 0.3); margin: 0 auto; }
         .btn-container { display: flex; gap: 10px; padding: 10px 15px; }
         .btn-add { flex: 2; background-color: #f1f3f4; color: #333; border: 1px solid #ccc; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; touch-action: manipulation; }
         .btn-clear { flex: 1; background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
         .btn-add:active, .btn-clear:active { transform: scale(0.98); opacity: 0.8; }
 
-        /* ÖZET VE SONUÇ */
+        /* --- ÖZET VE SONUÇ --- */
         .summary-box { background-color: #f8f9fa; padding: 15px; border-top: 1px solid #eee; font-size: 13px; margin-top: auto; }
         .row-sum { display: flex; justify-content: space-between; margin-bottom: 6px; }
         .val { font-weight: bold; color: #333; font-family: monospace; font-size: 14px; }
         .avg-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; color: #4a90e2; font-size: 14px; font-weight: 800; }
         
-        .result-area { 
-            margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; gap: 20px;
-        }
+        .result-area { margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; gap: 20px; }
         .sapma-display { font-size: 28px; font-weight: 800; padding: 10px 20px; border-radius: 8px; min-width: 100px; text-align: center; color: #fff; }
         
         .positive-sapma { background-color: #ef5350; } 
         .negative-sapma { background-color: #66bb6a; } 
         .neutral-sapma { background-color: #bdbdbd; } 
-        
         .warning-msg { color: #d32f2f; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; text-align: left;}
 
-        /* --- MOBİL İÇİN ÖZEL (RESPONSIVE) --- */
+        /* --- FOOTER / İMZA STİLLERİ --- */
+        .footer-signature {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 1px dashed #ccc;
+        }
+
+        /* "BİR KAHRAMANMARAŞ YAPIMIDIR" - Kırmızı/Altın Parlama */
+        .maras-text {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 900;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            /* Arka plan gradyanı */
+            background: linear-gradient(to right, #b71c1c, #ffc107, #b71c1c);
+            background-size: 200% auto;
+            color: #b71c1c; /* Fallback */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* "By_Oğuz" - RGB Renk Döngüsü ve Pulse */
+        .author-text {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 18px;
+            display: inline-block;
+            animation: colorCycle 4s infinite alternate, pulse 2s infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        @keyframes colorCycle {
+            0% { color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.3); }
+            25% { color: #00ff00; text-shadow: 0 0 5px rgba(0,255,0,0.3); }
+            50% { color: #0000ff; text-shadow: 0 0 5px rgba(0,0,255,0.3); }
+            75% { color: #ff00ff; text-shadow: 0 0 5px rgba(255,0,255,0.3); }
+            100% { color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.3); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
         @media (max-width: 768px) {
-            .main-wrapper { flex-direction: column; } /* Yan yana yerine alt alta */
+            .main-wrapper { flex-direction: column; }
             .panel { width: 100%; min-width: auto; }
-            
-            .result-area { 
-                flex-direction: column; /* Sonuç kutusunu dikey yap */
-                text-align: center; 
-                padding: 15px;
-            }
+            .result-area { flex-direction: column; text-align: center; padding: 15px; }
             .sapma-display { width: 100%; margin-top: 10px; }
             .top-bar { flex-direction: column; align-items: stretch; }
             .top-bar input { font-size: 18px; padding: 10px; }
@@ -131,7 +163,24 @@
 </head>
 <body>
 
-<div class="container">
+<div id="login-screen">
+    <div class="login-box">
+        <h2>Hoş Geldiniz</h2>
+        <div id="loginError" class="error-msg">Kullanıcı adı veya şifre hatalı!</div>
+        <input type="text" id="username" class="login-input" placeholder="Kullanıcı Adı" value="ihlas">
+        <input type="password" id="password" class="login-input" placeholder="Şifre" value="">
+        <label class="remember-me">
+            <input type="checkbox" id="rememberMe"> Beni Hatırla
+        </label>
+        <button class="login-btn" onclick="checkLogin()">GİRİŞ YAP</button>
+    </div>
+</div>
+
+<div id="app-container">
+    <div class="header-actions">
+        <button class="btn-logout" onclick="logout()">Çıkış Yap</button>
+    </div>
+
     <div class="top-bar">
         <div class="input-group">
             <label>FATURA / REFERANS TARİHİ</label>
@@ -185,6 +234,10 @@
             </div>
             <div class="summary-box">
                 <div class="row-sum"><span>Toplam Ciro:</span><span class="val" id="rightCiro">0,00</span></div>
+                <div id="ciroStatusMsg" style="display:none; color:red; font-size:11px; text-align:right; font-weight:bold; margin-bottom:5px;">
+                    ⚠️ Ciro Eşit Değil!
+                </div>
+                
                 <div class="row-sum"><span>Vade Çarpan Top:</span><span class="val" id="rightGunTutar">0,00</span></div>
                 <div class="row-sum avg-row" style="color: #66bb6a;"><span>Ort. Vade Günü:</span><span class="val" id="rightAvg">0,00</span></div>
             </div>
@@ -193,17 +246,55 @@
 
     <div class="result-area">
         <div style="color:#666; font-size:13px;">
-            <strong>Bilgi:</strong> Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
+            Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
         </div>
         <div style="text-align: center; width: 100%;">
             <div style="font-size: 16px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
             <div class="sapma-display neutral-sapma" id="finalSapma">0,00</div>
         </div>
     </div>
+
+    <div class="footer-signature">
+        <span class="maras-text">🌶️ BİR KAHRAMANMARAŞ YAPIMIDIR 🌶️</span>
+        <span class="author-text">By_Oğuz</span>
+    </div>
+
 </div>
 
 <script>
-    // CİRO VE TAKSİT KURALLARI (GÜNCEL)
+    // --- GİRİŞ İŞLEMLERİ ---
+    const CREDENTIALS = { user: "ihlas", pass: "1234" };
+
+    function checkLogin() {
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        const remember = document.getElementById('rememberMe').checked;
+        const errorDiv = document.getElementById('loginError');
+
+        if (u === CREDENTIALS.user && p === CREDENTIALS.pass) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            if (remember) localStorage.setItem('isLoggedIn', 'true');
+            initializeApp();
+        } else {
+            errorDiv.style.display = 'block';
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('isLoggedIn');
+        location.reload();
+    }
+
+    function checkSession() {
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            initializeApp();
+        }
+    }
+
+    // --- HESAPLAMA KURALLARI ---
     const RULES = {
         24000: 2, 24500: 2,
         26000: 5, 27000: 5,
@@ -384,6 +475,22 @@
         const leftAvg = parseTr('leftAvg');
         const rightAvg = parseTr('rightAvg');
         const leftCiro = parseTr('leftCiro');
+        const rightCiro = parseTr('rightCiro');
+
+        // --- YENİ CİRO KONTROL MANTIĞI ---
+        const targetInputVal = parseFloat(document.getElementById('targetCiro').value) || 0;
+        const msgEl = document.getElementById('ciroStatusMsg');
+        const rightCiroEl = document.getElementById('rightCiro');
+
+        // 0.1 kuruşluk tolerans ile kontrol et
+        if (Math.abs(targetInputVal - rightCiro) > 0.1) {
+            msgEl.style.display = 'block';
+            rightCiroEl.style.color = '#d32f2f'; // Koyu Kırmızı
+        } else {
+            msgEl.style.display = 'none';
+            rightCiroEl.style.color = '#333'; // Normal Siyah
+        }
+        // ---------------------------------
 
         if (leftCiro === 0) {
             document.getElementById('finalSapma').textContent = "0,00";
@@ -400,12 +507,24 @@
         else el.classList.add('negative-sapma');
     }
 
+    function initializeApp() {
+        const dateInput = document.getElementById('satisTarihi');
+        if(!dateInput.value) dateInput.valueAsDate = new Date();
+        generateTargetPlan();
+        calculateRightSide();
+    }
+
     window.onload = function() {
-        document.getElementById('satisTarihi').valueAsDate = new Date();
+        checkSession();
+
         document.getElementById('targetCiro').addEventListener('input', generateTargetPlan);
         document.getElementById('satisTarihi').addEventListener('change', () => {
             generateTargetPlan();
             calculateRightSide();
+        });
+        
+        document.getElementById('password').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') checkLogin();
         });
     };
 </script>
