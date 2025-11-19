@@ -49,17 +49,40 @@
         /* --- TOP BAR --- */
         .top-bar { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-end; }
         .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 200px; }
-        .input-group label { font-weight: 700; color: #555; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group label { font-weight: 700; color: #555; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease; }
         .top-bar input { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; color: #333; text-align: center; font-weight: bold; transition: border-color 0.3s; width: 100%; -webkit-appearance: none; }
         .top-bar input:focus { border-color: #4a90e2; outline: none; background-color: #fff; }
         #targetCiro { background-color: #eef6fc; color: #0d47a1; border-color: #bbdefb; }
         
+        /* Klima Checkbox Stili */
+        .klima-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            background: #e0f7fa; padding: 10px; border-radius: 8px; border: 1px solid #b2ebf2;
+            height: 50px; margin-bottom: 2px; cursor: pointer;
+        }
+        .klima-wrapper input { width: 20px; height: 20px; margin-right: 10px; cursor: pointer; }
+        .klima-wrapper label { cursor: pointer; font-weight: bold; color: #006064; font-size: 14px; user-select: none; }
+        
+        /* İstisnai Fiyat Aktif Class */
+        .label-active {
+            color: #00acc1 !important; /* Parlak Cyan/Mavi */
+            text-shadow: 0 0 8px rgba(0,172,193,0.4);
+            font-weight: 900 !important;
+        }
+
         /* --- PANELLER --- */
         .main-wrapper { display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap; }
         .panel { flex: 1; background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; min-width: 300px; }
-        .panel h3 { margin: 0; padding: 15px; text-align: center; font-size: 15px; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+        .panel h3 { margin: 0; padding: 15px; text-align: center; font-size: 15px; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; position: relative; }
         .panel-left h3 { background-color: #4a90e2; } 
         .panel-right h3 { background-color: #66bb6a; } 
+
+        .klima-badge {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: #fff; color: #006064; font-size: 10px; padding: 3px 8px;
+            border-radius: 10px; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: none;
+        }
 
         /* --- TABLO --- */
         .table-container { padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 400px; overflow-y: auto; }
@@ -217,11 +240,21 @@
             <input type="number" id="targetCiro" placeholder="Örn: 34000">
             <div id="ciroWarning" class="warning-msg">Bu tutar için tanımlı plan yok!</div>
         </div>
+        <div class="input-group" style="min-width: 150px;">
+             <label id="istisnaiLabel">İSTİSNAİ FİYAT</label>
+             <div class="klima-wrapper" onclick="toggleKlima()">
+                 <input type="checkbox" id="klimaMode" onchange="generateTargetPlan()">
+                 <label for="klimaMode">❄️ KLİMA SATIŞI</label>
+             </div>
+        </div>
     </div>
 
     <div class="main-wrapper">
         <div class="panel panel-left">
-            <h3>OLMASI GEREKEN (HEDEF)</h3>
+            <h3>
+                OLMASI GEREKEN (HEDEF)
+                <span id="klimaIndicator" class="klima-badge">KLİMA</span>
+            </h3>
             <div class="table-container">
                 <table id="tableLeft">
                     <thead>
@@ -273,6 +306,7 @@
     <div class="result-area">
         <div style="color:#666; font-size:13px; flex:1;">
             Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
+            <br><span style="color:#006064; font-weight:bold;">Not:</span> 31.000 ve 36.000 için Klima taksitlerini görmek isterseniz yukarıdan "Klima Satışı"nı seçin.
         </div>
         <div style="text-align: center; min-width: 180px;">
             <div style="font-size: 16px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
@@ -336,16 +370,29 @@
     }
 
     // --- HESAPLAMA KURALLARI ---
+    
+    // Standart Kurallar (31k ve 36k eski haline getirildi)
     const RULES = {
         24000: 2, 24500: 2,
         26000: 5, 27000: 5,
         28000: 8, 29000: 8,
-        30000: 13, 31000: 13,
+        30000: 13, 
+        31000: 13, // ESKİ HALİ
         32000: 16, 33000: 16,
         34000: 19, 35000: 19,
-        36000: 21,
+        36000: 21, // ESKİ HALİ
+        37500: 13,
+        43500: 5,
+        50500: 10,
+        55000: 13,
         63000: 2, 70000: 6,
         75000: 9, 80000: 13, 84000: 16
+    };
+
+    // Klima Özel Kuralları (Görsellerdeki değerler)
+    const KLIMA_RULES = {
+        31000: 5,
+        36000: 10
     };
 
     function formatNum(num) { return num.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -374,26 +421,55 @@
         return `${year}-${month}-01`;
     }
 
+    function toggleKlima() {
+        generateTargetPlan();
+    }
+
     function generateTargetPlan() {
         const ciroInput = parseFloat(document.getElementById('targetCiro').value);
         const refDate = document.getElementById('satisTarihi').value;
+        const isKlima = document.getElementById('klimaMode').checked;
         const tbody = document.querySelector('#tableLeft tbody');
         const warningEl = document.getElementById('ciroWarning');
+        const klimaBadge = document.getElementById('klimaIndicator');
+        const istisnaiLabel = document.getElementById('istisnaiLabel');
+
+        // LABEL RENK DEĞİŞİMİ
+        if(isKlima) {
+            istisnaiLabel.classList.add('label-active');
+        } else {
+            istisnaiLabel.classList.remove('label-active');
+        }
         
         tbody.innerHTML = ""; 
+        klimaBadge.style.display = 'none';
 
-        if (!ciroInput || !refDate || !RULES[ciroInput]) {
+        // Taksit sayısı belirleme
+        let installmentCount = 0;
+
+        if (ciroInput) {
+            // Eğer Klima modu açıksa ve bu ciro için özel klima kuralı varsa onu kullan
+            if (isKlima && KLIMA_RULES[ciroInput]) {
+                installmentCount = KLIMA_RULES[ciroInput];
+                klimaBadge.style.display = 'inline-block';
+            } 
+            // Yoksa standart kurallara bak
+            else if (RULES[ciroInput]) {
+                installmentCount = RULES[ciroInput];
+            }
+        }
+
+        if (!ciroInput || !refDate || installmentCount === 0) {
             document.getElementById('leftCiro').textContent = "0,00";
             document.getElementById('leftGunTutar').textContent = "0,00";
             document.getElementById('leftAvg').textContent = "0,00";
             calculateFinalResult(); 
-            if(ciroInput && !RULES[ciroInput]) warningEl.style.display = 'block';
+            if(ciroInput && installmentCount === 0) warningEl.style.display = 'block';
             else warningEl.style.display = 'none';
             return;
         }
         warningEl.style.display = 'none';
 
-        const installmentCount = RULES[ciroInput];
         const baseAmount = ciroInput / installmentCount;
         let currentTotal = 0;
 
