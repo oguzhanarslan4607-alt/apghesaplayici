@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vade Sapması Analizi (By_Oğuz)</title>
+    <title>Vade Sapması Analizi (Pro)</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -548,42 +548,48 @@
         });
     }
 
+    // --- YENİ: OTOMATİK EŞİTLEME (SADECE 1. SENET DEĞİŞİNCE) ---
+    function syncInstallments(input) {
+        // Girdi yapılan satırı bul
+        const row = input.closest('tr');
+        const tbody = row.parentElement;
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const index = rows.indexOf(row);
+
+        // Index 0 = Peşinat, Index 1 = İlk Senet
+        // Eğer kullanıcı 1. senedi (index 1) değiştiriyorsa:
+        if (index === 1) {
+            const val = input.value;
+            // 2. senetten sona kadar hepsini güncelle
+            for (let i = 2; i < rows.length; i++) {
+                const nextInput = rows[i].querySelector('.input-tutar');
+                if (nextInput) {
+                    nextInput.value = val;
+                }
+            }
+        }
+        // Her türlü hesaplamayı güncelle
+        calculateRightSide();
+    }
+
     function copyTargetToReal() {
         const leftRows = document.querySelectorAll('#tableLeft tbody tr');
         if (leftRows.length === 0) {
             alert("Kopyalanacak hedef tablo boş! Önce ciro giriniz.");
             return;
         }
-
         const rightTbody = document.querySelector('#tableRight tbody');
         rightTbody.innerHTML = "";
-
         leftRows.forEach((row, index) => {
             const amountValStr = row.querySelector('.input-tutar').value;
             const amountRaw = parseFloat(amountValStr.replace(/\./g, '').replace(',', '.'));
             const dateVal = row.querySelector('.input-vade').value;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="text-align:center;"><button class="btn-delete" onclick="deleteRow(this)">✕</button></td>
-                <td class="row-num" style="text-align:center; font-weight:bold; color:#555;"></td>
-                <td style="position:relative;">
-                    <div class="input-wrapper">
-                        <span class="pesinat-badge">PEŞİNAT</span>
-                        <input type="number" class="input-tutar" value="${amountRaw.toFixed(2)}" step="0.01" oninput="calculateRightSide()">
-                    </div>
-                </td>
-                <td><input type="date" class="input-vade" value="${dateVal}" onchange="calculateRightSide()"></td>
-                <td class="cell-gun" style="text-align:center; color:var(--text-color);">0</td>
-                <td class="cell-gun-tutar" style="text-align:right; color:var(--text-color); font-size:12px;">0,00</td>
-            `;
-            rightTbody.appendChild(tr);
+            createRightRow(amountRaw, dateVal, rightTbody);
         });
-
         updateRowNumbers();
         calculateRightSide();
     }
-    
+
     function createRightRow(amount, dateVal, tbody) {
          const tr = document.createElement('tr');
          tr.innerHTML = `
@@ -592,7 +598,7 @@
             <td style="position:relative;">
                 <div class="input-wrapper">
                     <span class="pesinat-badge">PEŞİNAT</span>
-                    <input type="number" class="input-tutar" value="${amount.toFixed(2)}" step="0.01" oninput="calculateRightSide()">
+                    <input type="number" class="input-tutar" value="${amount.toFixed(2)}" step="0.01" oninput="syncInstallments(this)">
                 </div>
             </td>
             <td><input type="date" class="input-vade" value="${dateVal}" onchange="calculateRightSide()"></td>
