@@ -101,10 +101,28 @@
 
         /* --- BUTONLAR --- */
         .btn-delete { background-color: #ff5252; color: white; border: none; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(255, 82, 82, 0.3); margin: 0 auto; }
-        .btn-container { display: flex; gap: 10px; padding: 10px 15px; }
-        .btn-add { flex: 2; background-color: #f1f3f4; color: #333; border: 1px solid #ccc; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; touch-action: manipulation; }
-        .btn-clear { flex: 1; background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        .btn-add:active, .btn-clear:active { transform: scale(0.98); opacity: 0.8; }
+        
+        .btn-container { display: flex; gap: 8px; padding: 10px 15px; flex-wrap: wrap; }
+        
+        .btn-add { flex: 1; background-color: #f1f3f4; color: #333; border: 1px solid #ccc; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; min-width: 80px; }
+        .btn-clear { flex: 0.5; background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; min-width: 60px; }
+        
+        /* Yeni Kopyala Butonu Stili */
+        .btn-copy { 
+            flex: 2; 
+            background-color: #e3f2fd; 
+            color: #1565c0; 
+            border: 1px solid #90caf9; 
+            padding: 10px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 13px; 
+            min-width: 110px;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+
+        .btn-add:active, .btn-clear:active, .btn-copy:active { transform: scale(0.98); opacity: 0.8; }
 
         /* --- ÖZET VE SONUÇ --- */
         .summary-box { background-color: #f8f9fa; padding: 15px; border-top: 1px solid #eee; font-size: 13px; margin-top: auto; }
@@ -112,13 +130,31 @@
         .val { font-weight: bold; color: #333; font-family: monospace; font-size: 14px; }
         .avg-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; color: #4a90e2; font-size: 14px; font-weight: 800; }
         
-        .result-area { margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; gap: 20px; }
-        .sapma-display { font-size: 28px; font-weight: 800; padding: 10px 20px; border-radius: 8px; min-width: 100px; text-align: center; color: #fff; }
+        .result-area { margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; gap: 15px; }
         
-        .positive-sapma { background-color: #ef5350; } 
-        .negative-sapma { background-color: #66bb6a; } 
-        .neutral-sapma { background-color: #bdbdbd; } 
+        .result-top { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 20px; }
+        @media (max-width: 768px) { .result-top { flex-direction: column; text-align: center; } }
+
+        .sapma-display { font-size: 28px; font-weight: 800; padding: 10px 20px; border-radius: 8px; min-width: 100px; text-align: center; color: #fff; transition: background-color 0.6s ease; }
+        
         .warning-msg { color: #d32f2f; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; text-align: left;}
+
+        /* --- RİSK ÇUBUĞU --- */
+        .risk-wrapper { width: 100%; margin-top: 10px; }
+        .risk-container {
+            width: 100%; height: 18px; background-color: #eceff1;
+            border-radius: 10px; overflow: hidden; position: relative;
+            border: 1px solid #cfd8dc;
+        }
+        .risk-bar {
+            height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), background-color 0.6s ease;
+            border-radius: 10px;
+            box-shadow: 1px 0 5px rgba(0,0,0,0.1);
+        }
+        .risk-text {
+            text-align: center; font-size: 12px; font-weight: 800;
+            margin-top: 6px; letter-spacing: 0.5px; text-transform: uppercase;
+        }
 
         /* --- YASAL UYARI / NOT KUTUSU --- */
         .disclaimer-box {
@@ -200,14 +236,6 @@
             100% { transform: scale(1); }
         }
 
-        @media (max-width: 768px) {
-            .main-wrapper { flex-direction: column; }
-            .panel { width: 100%; min-width: auto; }
-            .result-area { flex-direction: column; text-align: center; padding: 15px; }
-            .sapma-display { width: 100%; margin-top: 10px; }
-            .top-bar { flex-direction: column; align-items: stretch; }
-            .top-bar input { font-size: 18px; padding: 10px; }
-        }
     </style>
 </head>
 <body>
@@ -288,7 +316,8 @@
                 </table>
             </div>
             <div class="btn-container">
-                <button class="btn-add" onclick="addManualRow()">+ Ödeme Ekle</button>
+                <button class="btn-copy" onclick="copyTargetToReal()">⚡ Tabloyu Kopyala</button>
+                <button class="btn-add" onclick="addManualRow()">+ Ekle</button>
                 <button class="btn-clear" onclick="clearRightTable()">Temizle</button>
             </div>
             <div class="summary-box">
@@ -304,13 +333,23 @@
     </div>
 
     <div class="result-area">
-        <div style="color:#666; font-size:13px; flex:1;">
-            Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
-            <br><span style="color:#006064; font-weight:bold;">Not:</span> 31.000 ve 36.000 için Klima taksitlerini görmek isterseniz yukarıdan "Klima Satışı"nı seçin.
+        <div class="result-top">
+            <div style="color:#666; font-size:13px; flex:1;">
+                <div style="margin-bottom:5px;"><strong>⚡ İpucu:</strong> Sol tabloyu sağa aktarmak için <b>"Tabloyu Kopyala"</b> butonunu kullanın.</div>
+                Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
+                <br><span style="color:#006064; font-weight:bold;">Not:</span> 31.000 ve 36.000 için Klima taksitlerini görmek isterseniz yukarıdan "Klima Satışı"nı seçin.
+            </div>
+            <div style="text-align: center; min-width: 180px;">
+                <div style="font-size: 16px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
+                <div class="sapma-display" id="finalSapma">0,00</div>
+            </div>
         </div>
-        <div style="text-align: center; min-width: 180px;">
-            <div style="font-size: 16px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
-            <div class="sapma-display neutral-sapma" id="finalSapma">0,00</div>
+
+        <div class="risk-wrapper">
+            <div class="risk-container">
+                <div id="riskBar" class="risk-bar"></div>
+            </div>
+            <div id="riskText" class="risk-text">VERİ BEKLENİYOR...</div>
         </div>
     </div>
 
@@ -371,7 +410,7 @@
 
     // --- HESAPLAMA KURALLARI ---
     
-    // Standart Kurallar (31k ve 36k eski haline getirildi)
+    // Standart Kurallar
     const RULES = {
         24000: 2, 24500: 2,
         26000: 5, 27000: 5,
@@ -389,7 +428,7 @@
         75000: 9, 80000: 13, 84000: 16
     };
 
-    // Klima Özel Kuralları (Görsellerdeki değerler)
+    // Klima Özel Kuralları
     const KLIMA_RULES = {
         31000: 5,
         36000: 10
@@ -448,12 +487,10 @@
         let installmentCount = 0;
 
         if (ciroInput) {
-            // Eğer Klima modu açıksa ve bu ciro için özel klima kuralı varsa onu kullan
             if (isKlima && KLIMA_RULES[ciroInput]) {
                 installmentCount = KLIMA_RULES[ciroInput];
                 klimaBadge.style.display = 'inline-block';
             } 
-            // Yoksa standart kurallara bak
             else if (RULES[ciroInput]) {
                 installmentCount = RULES[ciroInput];
             }
@@ -507,6 +544,42 @@
                 row.classList.remove('first-row');
             }
         });
+    }
+
+    function copyTargetToReal() {
+        const leftRows = document.querySelectorAll('#tableLeft tbody tr');
+        if (leftRows.length === 0) {
+            alert("Kopyalanacak hedef tablo boş! Önce ciro giriniz.");
+            return;
+        }
+
+        const rightTbody = document.querySelector('#tableRight tbody');
+        rightTbody.innerHTML = "";
+
+        leftRows.forEach((row, index) => {
+            const amountValStr = row.querySelector('.input-tutar').value;
+            const amountRaw = parseFloat(amountValStr.replace(/\./g, '').replace(',', '.'));
+            const dateVal = row.querySelector('.input-vade').value;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="text-align:center;"><button class="btn-delete" onclick="deleteRow(this)">✕</button></td>
+                <td class="row-num" style="text-align:center; font-weight:bold; color:#555;"></td>
+                <td style="position:relative;">
+                    <div class="input-wrapper">
+                        <span class="pesinat-badge">PEŞİNAT</span>
+                        <input type="number" class="input-tutar" value="${amountRaw.toFixed(2)}" step="0.01" oninput="calculateRightSide()">
+                    </div>
+                </td>
+                <td><input type="date" class="input-vade" value="${dateVal}" onchange="calculateRightSide()"></td>
+                <td class="cell-gun" style="text-align:center; color:#666;">0</td>
+                <td class="cell-gun-tutar" style="text-align:right; color:#666; font-size:12px;">0,00</td>
+            `;
+            rightTbody.appendChild(tr);
+        });
+
+        updateRowNumbers();
+        calculateRightSide();
     }
 
     function addManualRow() {
@@ -599,7 +672,6 @@
         const msgEl = document.getElementById('ciroStatusMsg');
         const rightCiroEl = document.getElementById('rightCiro');
 
-        // 0.1 tolerans ile kontrol
         if (Math.abs(targetInputVal - rightCiro) > 0.1) {
             msgEl.style.display = 'block';
             rightCiroEl.style.color = '#d32f2f';
@@ -610,17 +682,69 @@
 
         if (leftCiro === 0) {
             document.getElementById('finalSapma').textContent = "0,00";
-            document.getElementById('finalSapma').className = "sapma-display neutral-sapma";
+            updateRiskBar(0, false);
             return;
         }
 
         const sapma = rightAvg - leftAvg;
         const el = document.getElementById('finalSapma');
         el.textContent = formatNum(sapma);
-        el.className = 'sapma-display';
-        if (Math.abs(sapma) < 0.1) el.classList.add('neutral-sapma');
-        else if (sapma > 0) el.classList.add('positive-sapma');
-        else el.classList.add('negative-sapma');
+        
+        // Risk barı ve kutu rengi güncelleme
+        updateRiskBar(sapma, true);
+    }
+
+    // --- RİSK ÇUBUĞU VE KUTU RENGİ GÜNCELLEME FONKSİYONU ---
+    function updateRiskBar(sapma, isActive) {
+        const bar = document.getElementById('riskBar');
+        const txt = document.getElementById('riskText');
+        const box = document.getElementById('finalSapma'); // Kutu elementi
+
+        if (!isActive) {
+            bar.style.width = '0%';
+            txt.textContent = 'VERİ BEKLENİYOR...';
+            txt.style.color = '#999';
+            box.style.backgroundColor = '#bdbdbd'; // Nötr gri
+            return;
+        }
+
+        let color, width, text, textColor;
+
+        // Kurallar:
+        // Sapma ≤ 0: Koyu yeşil (#2e7d32)
+        // 1 - 15: Açık yeşil (#66bb6a)
+        // 16 - 25: Sarı (#fdd835)
+        // 26 - 29: Turuncu (#ff9800)
+        // ≥ 29: Kırmızı (#d32f2f)
+
+        if (sapma <= 0) {
+            color = '#2e7d32'; width = '100%'; text = "GÜVENLİ (ŞİRKET LEHİNE)"; textColor = '#2e7d32';
+        } else if (sapma <= 15) {
+            color = '#66bb6a'; width = '50%'; text = "MAKUL SEVİYE"; textColor = '#66bb6a';
+        } else if (sapma <= 25) {
+            color = '#fdd835'; width = '66%'; text = "DİKKAT EDİLMELİ"; textColor = '#f9a825'; // Metin rengi okunurluk için biraz daha koyu
+        } else if (sapma < 29) {
+            color = '#ff9800'; width = '85%'; text = "RİSKLİ BÖLGE"; textColor = '#ef6c00';
+        } else {
+            color = '#d32f2f'; width = '100%'; text = "KRİTİK RİSK!"; textColor = '#c62828';
+        }
+
+        // Barı güncelle
+        bar.style.width = width;
+        bar.style.backgroundColor = color;
+        
+        // Metni güncelle
+        txt.textContent = text;
+        txt.style.color = textColor;
+
+        // Kutuyu güncelle
+        box.style.backgroundColor = color;
+        // Sarı renkte yazı beyaz okunmayabilir, koyu yapalım. Diğerlerinde beyaz kalsın.
+        if (color === '#fdd835') {
+            box.style.color = '#333';
+        } else {
+            box.style.color = '#fff';
+        }
     }
 
     function initializeApp() {
