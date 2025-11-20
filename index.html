@@ -4,9 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vade Sapması Analizi (By_Oğuz)</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
     <style>
         /* --- TEMEL AYARLAR --- */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; padding: 0; margin: 0; color: #333; box-sizing: border-box; height: 100vh; }
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --panel-bg: #fff;
+            --input-bg: #fff;
+            --input-border: #e0e0e0;
+            --th-bg: #f8f9fa;
+            --th-text: #555;
+            --border-color: #eee;
+            --shadow: rgba(0,0,0,0.05);
+        }
+
+        /* KARANLIK MOD DEĞİŞKENLERİ */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --panel-bg: #1e1e1e;
+            --input-bg: #2c2c2c;
+            --input-border: #444;
+            --th-bg: #252525;
+            --th-text: #bbb;
+            --border-color: #333;
+            --shadow: rgba(0,0,0,0.5);
+        }
+
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); padding: 0; margin: 0; color: var(--text-color); box-sizing: border-box; height: 100vh; transition: background-color 0.3s, color 0.3s; }
         *, *:before, *:after { box-sizing: inherit; }
         
         /* --- GİRİŞ EKRANI --- */
@@ -25,54 +54,54 @@
             width: 100%; padding: 12px; margin-bottom: 15px;
             border: 2px solid #eee; border-radius: 8px; font-size: 16px;
         }
-        .login-input:focus { border-color: #4a90e2; outline: none; }
         .login-btn {
             width: 100%; padding: 12px; background-color: #4a90e2; color: white;
             border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
             transition: background 0.3s;
         }
         .login-btn:hover { background-color: #357abd; }
-        .remember-me {
-            display: flex; align-items: center; justify-content: flex-start;
-            margin-bottom: 20px; font-size: 14px; color: #666;
-        }
-        .remember-me input { margin-right: 10px; width: 18px; height: 18px; }
         .error-msg { color: #ef5350; margin-bottom: 15px; font-size: 14px; display: none; font-weight: bold; }
 
         /* --- UYGULAMA KAPSAYICISI --- */
-        #app-container { display: none; padding: 20px; max-width: 1280px; margin: 0 auto; padding-bottom: 80px; /* Footer için boşluk */ }
+        #app-container { display: none; padding: 20px; max-width: 1280px; margin: 0 auto; padding-bottom: 80px; }
 
-        /* --- HEADER --- */
-        .header-actions { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-        .btn-logout { background: #ff5252; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        /* --- HEADER & TOOLBAR --- */
+        .header-actions { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; flex-wrap: wrap; gap: 10px; }
+        
+        .action-group-right { display: flex; gap: 10px; }
+
+        .btn-action {
+            background-color: var(--panel-bg); color: var(--text-color); border: 1px solid var(--input-border);
+            padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+        }
+        .btn-action:hover { background-color: #e3f2fd; color: #1565c0; border-color: #1565c0; }
+        
+        .btn-logout { background: #ff5252; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px;}
 
         /* --- TOP BAR --- */
-        .top-bar { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-end; }
+        .top-bar { background: var(--panel-bg); padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px var(--shadow); margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: flex-end; border: 1px solid var(--border-color); }
         .input-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 200px; }
-        .input-group label { font-weight: 700; color: #555; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s ease; }
-        .top-bar input { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; color: #333; text-align: center; font-weight: bold; transition: border-color 0.3s; width: 100%; -webkit-appearance: none; }
-        .top-bar input:focus { border-color: #4a90e2; outline: none; background-color: #fff; }
-        #targetCiro { background-color: #eef6fc; color: #0d47a1; border-color: #bbdefb; }
+        .input-group label { font-weight: 700; color: var(--th-text); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .top-bar input { padding: 12px; border: 2px solid var(--input-border); border-radius: 8px; font-size: 16px; color: var(--text-color); background-color: var(--input-bg); text-align: center; font-weight: bold; width: 100%; -webkit-appearance: none; }
+        .top-bar input:focus { border-color: #4a90e2; outline: none; }
         
-        /* Klima Checkbox Stili */
+        /* Klima Checkbox */
         .klima-wrapper {
             display: flex; align-items: center; justify-content: center;
             background: #e0f7fa; padding: 10px; border-radius: 8px; border: 1px solid #b2ebf2;
-            height: 50px; margin-bottom: 2px; cursor: pointer;
+            height: 50px; margin-bottom: 2px; cursor: pointer; transition: background 0.3s;
         }
+        [data-theme="dark"] .klima-wrapper { background: #004d40; border-color: #00695c; }
+        [data-theme="dark"] .klima-wrapper label { color: #80cbc4; }
+
         .klima-wrapper input { width: 20px; height: 20px; margin-right: 10px; cursor: pointer; }
         .klima-wrapper label { cursor: pointer; font-weight: bold; color: #006064; font-size: 14px; user-select: none; }
-        
-        /* İstisnai Fiyat Aktif Class */
-        .label-active {
-            color: #00acc1 !important; /* Parlak Cyan/Mavi */
-            text-shadow: 0 0 8px rgba(0,172,193,0.4);
-            font-weight: 900 !important;
-        }
+        .label-active { color: #00acc1 !important; text-shadow: 0 0 8px rgba(0,172,193,0.4); font-weight: 900 !important; }
 
         /* --- PANELLER --- */
         .main-wrapper { display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap; }
-        .panel { flex: 1; background-color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; min-width: 300px; }
+        .panel { flex: 1; background-color: var(--panel-bg); border-radius: 12px; box-shadow: 0 4px 12px var(--shadow); overflow: hidden; display: flex; flex-direction: column; min-width: 300px; border: 1px solid var(--border-color); }
         .panel h3 { margin: 0; padding: 15px; text-align: center; font-size: 15px; color: #fff; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; position: relative; }
         .panel-left h3 { background-color: #4a90e2; } 
         .panel-right h3 { background-color: #66bb6a; } 
@@ -85,14 +114,14 @@
         }
 
         /* --- TABLO --- */
-        .table-container { padding: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 400px; overflow-y: auto; }
+        .table-container { padding: 0; overflow-x: auto; max-height: 400px; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 400px; }
-        th { background-color: #f8f9fa; color: #555; padding: 12px 8px; text-align: center; font-weight: 700; border-bottom: 2px solid #eee; position: sticky; top: 0; background: #f8f9fa; z-index: 10; white-space: nowrap; }
-        td { padding: 8px 5px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+        th { background-color: var(--th-bg); color: var(--th-text); padding: 12px 8px; text-align: center; font-weight: 700; border-bottom: 2px solid var(--border-color); position: sticky; top: 0; z-index: 10; }
+        td { padding: 8px 5px; border-bottom: 1px solid var(--border-color); vertical-align: middle; color: var(--text-color); }
         
-        input[type="number"].input-tutar { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; text-align: right; font-weight: 600; font-size: 14px; }
-        input[type="date"].input-vade { width: 100%; padding: 7px; border: 1px solid #ddd; border-radius: 6px; text-align: center; font-family: inherit; font-size: 13px; -webkit-appearance: none; }
-        .readonly-input { background-color: #f9f9f9; color: #777; border: 1px solid #eee !important; cursor: default; }
+        input[type="number"].input-tutar { width: 100%; padding: 8px; border: 1px solid var(--input-border); border-radius: 6px; text-align: right; font-weight: 600; font-size: 14px; background-color: var(--input-bg); color: var(--text-color); }
+        input[type="date"].input-vade { width: 100%; padding: 7px; border: 1px solid var(--input-border); border-radius: 6px; text-align: center; font-family: inherit; font-size: 13px; background-color: var(--input-bg); color: var(--text-color); }
+        .readonly-input { background-color: var(--bg-color) !important; cursor: default; }
 
         .input-wrapper { position: relative; margin-top: 5px; }
         .pesinat-badge { position: absolute; top: -20px; left: 0; font-size: 10px; background-color: #ff9800; color: white; padding: 2px 6px; border-radius: 4px 4px 0 0; font-weight: bold; z-index: 5; box-shadow: 0 -1px 2px rgba(0,0,0,0.1); display: none; }
@@ -103,139 +132,67 @@
         .btn-delete { background-color: #ff5252; color: white; border: none; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(255, 82, 82, 0.3); margin: 0 auto; }
         
         .btn-container { display: flex; gap: 8px; padding: 10px 15px; flex-wrap: wrap; }
-        
-        .btn-add { flex: 1; background-color: #f1f3f4; color: #333; border: 1px solid #ccc; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; min-width: 80px; }
+        .btn-add { flex: 1; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--input-border); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; min-width: 80px; }
         .btn-clear { flex: 0.5; background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; min-width: 60px; }
+        .btn-copy { flex: 2; background-color: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 13px; min-width: 110px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         
-        /* Yeni Kopyala Butonu Stili */
-        .btn-copy { 
-            flex: 2; 
-            background-color: #e3f2fd; 
-            color: #1565c0; 
-            border: 1px solid #90caf9; 
-            padding: 10px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            font-size: 13px; 
-            min-width: 110px;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-        }
-
-        .btn-add:active, .btn-clear:active, .btn-copy:active { transform: scale(0.98); opacity: 0.8; }
+        [data-theme="dark"] .btn-add { background-color: #333; color: #eee; border-color: #555; }
+        [data-theme="dark"] .btn-clear { background-color: #3e2723; color: #ffcc80; border-color: #5d4037; }
+        [data-theme="dark"] .btn-copy { background-color: #0d47a1; color: #bbdefb; border-color: #1565c0; }
 
         /* --- ÖZET VE SONUÇ --- */
-        .summary-box { background-color: #f8f9fa; padding: 15px; border-top: 1px solid #eee; font-size: 13px; margin-top: auto; }
+        .summary-box { background-color: var(--th-bg); padding: 15px; border-top: 1px solid var(--border-color); font-size: 13px; margin-top: auto; }
         .row-sum { display: flex; justify-content: space-between; margin-bottom: 6px; }
-        .val { font-weight: bold; color: #333; font-family: monospace; font-size: 14px; }
-        .avg-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; color: #4a90e2; font-size: 14px; font-weight: 800; }
+        .val { font-weight: bold; color: var(--text-color); font-family: monospace; font-size: 14px; }
+        .avg-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); color: #4a90e2; font-size: 14px; font-weight: 800; }
         
-        .result-area { margin-top: 20px; background-color: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        
+        .result-area { margin-top: 20px; background-color: var(--panel-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 15px; border: 1px solid var(--border-color); }
         .result-top { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 20px; }
-        @media (max-width: 768px) { .result-top { flex-direction: column; text-align: center; } }
-
         .sapma-display { font-size: 28px; font-weight: 800; padding: 10px 20px; border-radius: 8px; min-width: 100px; text-align: center; color: #fff; transition: background-color 0.6s ease; }
-        
         .warning-msg { color: #d32f2f; font-weight: bold; font-size: 12px; display: none; margin-top: 5px; text-align: left;}
 
         /* --- RİSK ÇUBUĞU --- */
         .risk-wrapper { width: 100%; margin-top: 10px; }
-        .risk-container {
-            width: 100%; height: 18px; background-color: #eceff1;
-            border-radius: 10px; overflow: hidden; position: relative;
-            border: 1px solid #cfd8dc;
-        }
-        .risk-bar {
-            height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1), background-color 0.6s ease;
-            border-radius: 10px;
-            box-shadow: 1px 0 5px rgba(0,0,0,0.1);
-        }
-        .risk-text {
-            text-align: center; font-size: 12px; font-weight: 800;
-            margin-top: 6px; letter-spacing: 0.5px; text-transform: uppercase;
-        }
+        .risk-container { width: 100%; height: 18px; background-color: var(--bg-color); border-radius: 10px; overflow: hidden; position: relative; border: 1px solid var(--border-color); }
+        .risk-bar { height: 100%; width: 0%; transition: width 0.6s, background-color 0.6s; border-radius: 10px; }
+        .risk-text { text-align: center; font-size: 12px; font-weight: 800; margin-top: 6px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--th-text); }
 
-        /* --- YASAL UYARI / NOT KUTUSU --- */
-        .disclaimer-box {
-            background-color: #fff8e1; /* Krem rengi */
-            border-left: 5px solid #ffb300; /* Turuncu sol çizgi */
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #5d4037;
-            line-height: 1.5;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .disclaimer-box h4 {
-            margin: 0 0 10px;
-            color: #e65100;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .disclaimer-box ul {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
+        /* --- YASAL UYARI --- */
+        .disclaimer-box { background-color: #fff8e1; border-left: 5px solid #ffb300; padding: 15px; margin-top: 20px; border-radius: 6px; font-size: 13px; color: #5d4037; line-height: 1.5; }
+        [data-theme="dark"] .disclaimer-box { background-color: #3e2723; color: #ffe0b2; border-left-color: #ff6f00; }
+        .disclaimer-box h4 { margin: 0 0 10px; color: #e65100; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .disclaimer-box ul { margin: 8px 0; padding-left: 20px; }
         .disclaimer-box li { margin-bottom: 5px; }
         .disclaimer-box strong { color: #bf360c; }
+        [data-theme="dark"] .disclaimer-box strong { color: #ffab91; }
 
-        /* --- FOOTER / İMZA STİLLERİ --- */
-        .footer-signature {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px;
-            border-top: 1px dashed #ccc;
+        /* --- MODAL (GEÇMİŞ) --- */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(3px); }
+        .modal-content { background-color: var(--panel-bg); margin: 10% auto; padding: 20px; border: 1px solid var(--border-color); width: 90%; max-width: 500px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-height: 70vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .close-modal { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-modal:hover { color: var(--text-color); }
+        .history-item { padding: 10px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .history-item:last-child { border-bottom: none; }
+        .history-info { font-size: 13px; }
+        .history-date { font-size: 11px; color: var(--th-text); }
+        .btn-restore { background: #4a90e2; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: 5px;}
+        .btn-del-hist { background: #ef5350; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+        /* --- FOOTER --- */
+        .footer-signature { text-align: center; margin-top: 50px; padding: 20px; border-top: 1px dashed var(--border-color); }
+        .maras-text { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 900; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(to right, #b71c1c, #ffc107, #b71c1c); background-size: 200% auto; color: #b71c1c; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 3s linear infinite; display: block; margin-bottom: 8px; }
+        .author-text { font-family: 'Courier New', monospace; font-weight: bold; font-size: 18px; display: inline-block; animation: colorCycle 4s infinite alternate, pulse 2s infinite; }
+        
+        @keyframes shine { to { background-position: 200% center; } }
+        @keyframes colorCycle { 0% { color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.3); } 25% { color: #00ff00; text-shadow: 0 0 5px rgba(0,255,0,0.3); } 50% { color: #0000ff; text-shadow: 0 0 5px rgba(0,0,255,0.3); } 75% { color: #ff00ff; text-shadow: 0 0 5px rgba(255,0,255,0.3); } 100% { color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.3); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; }
+            .panel { width: 100%; min-width: auto; }
+            .result-top { flex-direction: column; text-align: center; }
         }
-
-        /* "BİR KAHRAMANMARAŞ YAPIMIDIR" - Kırmızı/Altın Parlama */
-        .maras-text {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-weight: 900;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            /* Arka plan gradyanı */
-            background: linear-gradient(to right, #b71c1c, #ffc107, #b71c1c);
-            background-size: 200% auto;
-            color: #b71c1c; /* Fallback */
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        /* "By_Oğuz" - RGB Renk Döngüsü ve Pulse */
-        .author-text {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            font-size: 18px;
-            display: inline-block;
-            animation: colorCycle 4s infinite alternate, pulse 2s infinite;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        @keyframes colorCycle {
-            0% { color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.3); }
-            25% { color: #00ff00; text-shadow: 0 0 5px rgba(0,255,0,0.3); }
-            50% { color: #0000ff; text-shadow: 0 0 5px rgba(0,0,255,0.3); }
-            75% { color: #ff00ff; text-shadow: 0 0 5px rgba(255,0,255,0.3); }
-            100% { color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.3); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
     </style>
 </head>
 <body>
@@ -256,6 +213,21 @@
 <div id="app-container">
     <div class="header-actions">
         <button class="btn-logout" onclick="logout()">Çıkış Yap</button>
+        
+        <div class="action-group-right">
+            <button class="btn-action" onclick="toggleDarkMode()" title="Karanlık Mod">
+                <span id="themeIcon">🌙</span>
+            </button>
+            <button class="btn-action" onclick="showHistory()" title="Geçmiş Kayıtlar">
+                📁 Geçmiş
+            </button>
+            <button class="btn-action" onclick="saveSimulation()" title="Kaydet">
+                💾 Kaydet
+            </button>
+            <button class="btn-action" onclick="exportPDF()" title="PDF İndir">
+                📄 PDF İndir
+            </button>
+        </div>
     </div>
 
     <div class="top-bar">
@@ -334,13 +306,12 @@
 
     <div class="result-area">
         <div class="result-top">
-            <div style="color:#666; font-size:13px; flex:1;">
+            <div style="color: var(--text-color); font-size:13px; flex:1; opacity: 0.8;">
                 <div style="margin-bottom:5px;"><strong>⚡ İpucu:</strong> Sol tabloyu sağa aktarmak için <b>"Tabloyu Kopyala"</b> butonunu kullanın.</div>
                 Sol taraf otomatik dolar. Sağ tarafa ödemeleri ekleyin. İlk satır Peşinat'tır.
-                <br><span style="color:#006064; font-weight:bold;">Not:</span> 31.000 ve 36.000 için Klima taksitlerini görmek isterseniz yukarıdan "Klima Satışı"nı seçin.
             </div>
             <div style="text-align: center; min-width: 180px;">
-                <div style="font-size: 16px; font-weight: 600; color: #555; margin-bottom: 5px;">VADE SAPMASI</div>
+                <div style="font-size: 16px; font-weight: 600; color: var(--th-text); margin-bottom: 5px;">VADE SAPMASI</div>
                 <div class="sapma-display" id="finalSapma">0,00</div>
             </div>
         </div>
@@ -373,6 +344,17 @@
         <span class="author-text">By_Oğuz</span>
     </div>
 
+</div>
+
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin:0; color:var(--text-color)">Geçmiş Hesaplamalar</h3>
+            <span class="close-modal" onclick="closeHistory()">×</span>
+        </div>
+        <div id="historyList">
+            </div>
+    </div>
 </div>
 
 <script>
@@ -408,18 +390,40 @@
         }
     }
 
+    // --- KARANLIK MOD ---
+    function toggleDarkMode() {
+        const body = document.body;
+        const icon = document.getElementById('themeIcon');
+        
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            icon.textContent = '🌙';
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            icon.textContent = '☀️';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeIcon').textContent = '☀️';
+        }
+    }
+
     // --- HESAPLAMA KURALLARI ---
-    
-    // Standart Kurallar
     const RULES = {
         24000: 2, 24500: 2,
         26000: 5, 27000: 5,
         28000: 8, 29000: 8,
         30000: 13, 
-        31000: 13, // ESKİ HALİ
+        31000: 13, 
         32000: 16, 33000: 16,
         34000: 19, 35000: 19,
-        36000: 21, // ESKİ HALİ
+        36000: 21, 
         37500: 13,
         43500: 5,
         50500: 10,
@@ -428,7 +432,6 @@
         75000: 9, 80000: 13, 84000: 16
     };
 
-    // Klima Özel Kuralları
     const KLIMA_RULES = {
         31000: 5,
         36000: 10
@@ -473,7 +476,6 @@
         const klimaBadge = document.getElementById('klimaIndicator');
         const istisnaiLabel = document.getElementById('istisnaiLabel');
 
-        // LABEL RENK DEĞİŞİMİ
         if(isKlima) {
             istisnaiLabel.classList.add('label-active');
         } else {
@@ -483,7 +485,6 @@
         tbody.innerHTML = ""; 
         klimaBadge.style.display = 'none';
 
-        // Taksit sayısı belirleme
         let installmentCount = 0;
 
         if (ciroInput) {
@@ -572,8 +573,8 @@
                     </div>
                 </td>
                 <td><input type="date" class="input-vade" value="${dateVal}" onchange="calculateRightSide()"></td>
-                <td class="cell-gun" style="text-align:center; color:#666;">0</td>
-                <td class="cell-gun-tutar" style="text-align:right; color:#666; font-size:12px;">0,00</td>
+                <td class="cell-gun" style="text-align:center; color:var(--text-color);">0</td>
+                <td class="cell-gun-tutar" style="text-align:right; color:var(--text-color); font-size:12px;">0,00</td>
             `;
             rightTbody.appendChild(tr);
         });
@@ -581,14 +582,30 @@
         updateRowNumbers();
         calculateRightSide();
     }
+    
+    function createRightRow(amount, dateVal, tbody) {
+         const tr = document.createElement('tr');
+         tr.innerHTML = `
+            <td style="text-align:center;"><button class="btn-delete" onclick="deleteRow(this)">✕</button></td>
+            <td class="row-num" style="text-align:center; font-weight:bold; color:#555;"></td>
+            <td style="position:relative;">
+                <div class="input-wrapper">
+                    <span class="pesinat-badge">PEŞİNAT</span>
+                    <input type="number" class="input-tutar" value="${amount.toFixed(2)}" step="0.01" oninput="calculateRightSide()">
+                </div>
+            </td>
+            <td><input type="date" class="input-vade" value="${dateVal}" onchange="calculateRightSide()"></td>
+            <td class="cell-gun" style="text-align:center; color:var(--text-color);">0</td>
+            <td class="cell-gun-tutar" style="text-align:right; color:var(--text-color); font-size:12px;">0,00</td>
+        `;
+        tbody.appendChild(tr);
+    }
 
     function addManualRow() {
         const tbody = document.querySelector('#tableRight tbody');
         const rows = tbody.querySelectorAll('tr');
         const refDate = document.getElementById('satisTarihi').value;
-        
         let targetDate;
-        
         if (rows.length === 0) {
             targetDate = refDate;
         } else {
@@ -596,22 +613,7 @@
             const baseDate = (lastInput && lastInput.value) ? lastInput.value : refDate;
             targetDate = getNextMonthFirstDay(baseDate);
         }
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td style="text-align:center;"><button class="btn-delete" onclick="deleteRow(this)">✕</button></td>
-            <td class="row-num" style="text-align:center; font-weight:bold; color:#555;"></td>
-            <td style="position:relative;">
-                <div class="input-wrapper">
-                    <span class="pesinat-badge">PEŞİNAT</span>
-                    <input type="number" class="input-tutar" value="0" step="0.01" oninput="calculateRightSide()">
-                </div>
-            </td>
-            <td><input type="date" class="input-vade" value="${targetDate}" onchange="calculateRightSide()"></td>
-            <td class="cell-gun" style="text-align:center; color:#666;">0</td>
-            <td class="cell-gun-tutar" style="text-align:right; color:#666; font-size:12px;">0,00</td>
-        `;
-        tbody.appendChild(tr);
+        createRightRow(0, targetDate, tbody);
         updateRowNumbers();
         calculateRightSide();
     }
@@ -677,7 +679,7 @@
             rightCiroEl.style.color = '#d32f2f';
         } else {
             msgEl.style.display = 'none';
-            rightCiroEl.style.color = '#333';
+            rightCiroEl.style.color = 'var(--text-color)';
         }
 
         if (leftCiro === 0) {
@@ -689,65 +691,214 @@
         const sapma = rightAvg - leftAvg;
         const el = document.getElementById('finalSapma');
         el.textContent = formatNum(sapma);
-        
-        // Risk barı ve kutu rengi güncelleme
         updateRiskBar(sapma, true);
     }
 
-    // --- RİSK ÇUBUĞU VE KUTU RENGİ GÜNCELLEME FONKSİYONU ---
     function updateRiskBar(sapma, isActive) {
         const bar = document.getElementById('riskBar');
         const txt = document.getElementById('riskText');
-        const box = document.getElementById('finalSapma'); // Kutu elementi
+        const box = document.getElementById('finalSapma');
 
         if (!isActive) {
             bar.style.width = '0%';
             txt.textContent = 'VERİ BEKLENİYOR...';
             txt.style.color = '#999';
-            box.style.backgroundColor = '#bdbdbd'; // Nötr gri
+            box.style.backgroundColor = '#bdbdbd';
+            box.style.color = '#fff';
             return;
         }
 
-        let color, width, text, textColor;
-
-        // Kurallar:
-        // Sapma ≤ 0: Koyu yeşil (#2e7d32)
-        // 1 - 15: Açık yeşil (#66bb6a)
-        // 16 - 25: Sarı (#fdd835)
-        // 26 - 29: Turuncu (#ff9800)
-        // ≥ 29: Kırmızı (#d32f2f)
+        let color, width, text, textColor, boxTextColor = '#fff';
 
         if (sapma <= 0) {
             color = '#2e7d32'; width = '100%'; text = "GÜVENLİ (ŞİRKET LEHİNE)"; textColor = '#2e7d32';
         } else if (sapma <= 15) {
             color = '#66bb6a'; width = '50%'; text = "MAKUL SEVİYE"; textColor = '#66bb6a';
         } else if (sapma <= 25) {
-            color = '#fdd835'; width = '66%'; text = "DİKKAT EDİLMELİ"; textColor = '#f9a825'; // Metin rengi okunurluk için biraz daha koyu
+            color = '#fdd835'; width = '66%'; text = "DİKKAT EDİLMELİ"; textColor = '#f9a825'; boxTextColor = '#333';
         } else if (sapma < 29) {
             color = '#ff9800'; width = '85%'; text = "RİSKLİ BÖLGE"; textColor = '#ef6c00';
         } else {
             color = '#d32f2f'; width = '100%'; text = "KRİTİK RİSK!"; textColor = '#c62828';
         }
 
-        // Barı güncelle
         bar.style.width = width;
         bar.style.backgroundColor = color;
-        
-        // Metni güncelle
         txt.textContent = text;
         txt.style.color = textColor;
-
-        // Kutuyu güncelle
         box.style.backgroundColor = color;
-        // Sarı renkte yazı beyaz okunmayabilir, koyu yapalım. Diğerlerinde beyaz kalsın.
-        if (color === '#fdd835') {
-            box.style.color = '#333';
+        box.style.color = boxTextColor;
+    }
+
+    // --- GEÇMİŞ KAYIT VE YÜKLEME ---
+    function saveSimulation() {
+        const ciro = document.getElementById('targetCiro').value;
+        if(!ciro) { alert("Kaydetmek için önce ciro girmelisiniz."); return; }
+        
+        const name = prompt("Bu hesaplama için bir isim girin:", `${ciro} TL - Hesaplama`);
+        if(!name) return;
+
+        const rightRows = [];
+        document.querySelectorAll('#tableRight tbody tr').forEach(row => {
+             const tutar = row.querySelector('.input-tutar').value;
+             const vade = row.querySelector('.input-vade').value;
+             rightRows.push({tutar, vade});
+        });
+
+        const data = {
+            id: Date.now(),
+            name: name,
+            date: new Date().toLocaleString(),
+            ciro: ciro,
+            refDate: document.getElementById('satisTarihi').value,
+            klima: document.getElementById('klimaMode').checked,
+            rows: rightRows
+        };
+
+        const history = JSON.parse(localStorage.getItem('calcHistory') || "[]");
+        history.unshift(data);
+        localStorage.setItem('calcHistory', JSON.stringify(history));
+        alert("Kayıt başarılı!");
+    }
+
+    function showHistory() {
+        const history = JSON.parse(localStorage.getItem('calcHistory') || "[]");
+        const list = document.getElementById('historyList');
+        list.innerHTML = "";
+
+        if(history.length === 0) {
+            list.innerHTML = "<p style='text-align:center; color:#999;'>Kayıtlı hesaplama yok.</p>";
         } else {
-            box.style.color = '#fff';
+            history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div>
+                        <div style="font-weight:bold;">${item.name}</div>
+                        <div class="history-info">${item.ciro} TL | ${item.klima ? '❄️ Klima' : 'Standart'}</div>
+                        <div class="history-date">${item.date}</div>
+                    </div>
+                    <div>
+                        <button class="btn-restore" onclick="restoreSimulation(${item.id})">Yükle</button>
+                        <button class="btn-del-hist" onclick="deleteSimulation(${item.id})">Sil</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
         }
+        document.getElementById('historyModal').style.display = 'block';
+    }
+
+    function restoreSimulation(id) {
+        const history = JSON.parse(localStorage.getItem('calcHistory') || "[]");
+        const item = history.find(x => x.id === id);
+        if(!item) return;
+
+        document.getElementById('targetCiro').value = item.ciro;
+        document.getElementById('satisTarihi').value = item.refDate;
+        document.getElementById('klimaMode').checked = item.klima;
+
+        generateTargetPlan();
+
+        const rightTbody = document.querySelector('#tableRight tbody');
+        rightTbody.innerHTML = "";
+        item.rows.forEach(row => {
+            createRightRow(parseFloat(row.tutar), row.vade, rightTbody);
+        });
+        
+        updateRowNumbers();
+        calculateRightSide();
+        closeHistory();
+    }
+
+    function deleteSimulation(id) {
+        if(!confirm("Silmek istediğinize emin misiniz?")) return;
+        let history = JSON.parse(localStorage.getItem('calcHistory') || "[]");
+        history = history.filter(x => x.id !== id);
+        localStorage.setItem('calcHistory', JSON.stringify(history));
+        showHistory();
+    }
+
+    function closeHistory() {
+        document.getElementById('historyModal').style.display = 'none';
+    }
+
+    // --- PDF İNDİRME ---
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(18);
+        doc.text("Vade Sapmasi Analizi", 14, 20);
+        
+        doc.setFontSize(11);
+        const tarih = new Date().toLocaleDateString('tr-TR');
+        doc.text(`Rapor Tarihi: ${tarih}`, 14, 28);
+        
+        const ciro = document.getElementById('targetCiro').value;
+        const sapma = document.getElementById('finalSapma').textContent;
+        const refTarih = document.getElementById('satisTarihi').value;
+        
+        doc.text(`Fatura Tutari: ${ciro} TL`, 14, 35);
+        doc.text(`Ref Tarihi: ${refTarih}`, 80, 35);
+        doc.text(`Vade Sapmasi: ${sapma} Gun`, 14, 42);
+        
+        const headLeft = [['No', 'Tutar', 'Vade', 'Gun', 'Carpan']];
+        const bodyLeft = [];
+        document.querySelectorAll('#tableLeft tbody tr').forEach(tr => {
+            const tds = tr.querySelectorAll('td');
+            bodyLeft.push([
+                tds[0].textContent,
+                tr.querySelector('.input-tutar').value,
+                tr.querySelector('.input-vade').value,
+                tds[3].textContent,
+                tds[4].textContent
+            ]);
+        });
+
+        const headRight = [['No', 'Tutar', 'Vade', 'Gun', 'Carpan']];
+        const bodyRight = [];
+        document.querySelectorAll('#tableRight tbody tr').forEach(tr => {
+            const rowNum = tr.querySelector('.row-num').textContent;
+            const tutar = tr.querySelector('.input-tutar').value;
+            const vade = tr.querySelector('.input-vade').value;
+            const gun = tr.querySelector('.cell-gun').textContent;
+            const carpan = tr.querySelector('.cell-gun-tutar').textContent;
+            bodyRight.push([rowNum === '-' ? 'Pesinat' : rowNum, tutar, vade, gun, carpan]);
+        });
+
+        doc.setFontSize(12);
+        doc.setTextColor(40);
+        doc.text("Hedef Plan (Olmasi Gereken)", 14, 55);
+        
+        doc.autoTable({
+            head: headLeft,
+            body: bodyLeft,
+            startY: 60,
+            theme: 'striped',
+            styles: { fontSize: 9 }
+        });
+
+        doc.text("Gerceklesen Odeme Plani", 14, doc.lastAutoTable.finalY + 10);
+        
+        doc.autoTable({
+            head: headRight,
+            body: bodyRight,
+            startY: doc.lastAutoTable.finalY + 15,
+            theme: 'grid',
+            styles: { fontSize: 9 }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 15;
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text("Bu rapor By_Oguz yazilimi tarafindan olusturulmustur.", 14, finalY);
+        
+        doc.save(`Vade_Analizi_${ciro}.pdf`);
     }
 
     function initializeApp() {
+        loadTheme();
         const dateInput = document.getElementById('satisTarihi');
         if(!dateInput.value) dateInput.valueAsDate = new Date();
         generateTargetPlan();
@@ -766,6 +917,13 @@
         document.getElementById('password').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') checkLogin();
         });
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('historyModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     };
 </script>
 </body>
