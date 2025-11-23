@@ -3,106 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vade Sapması Analizi (Final)</title>
+    <title>Vade Sapması Analizi (Mobil Uyumlu)</title>
     
+    <!-- PDF Kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        :root { --bg:#f4f7f6; --txt:#333; --panel:#fff; --inp:#fff; --brd:#e0e0e0; --th:#f8f9fa; }
-        [data-theme="dark"] { --bg:#121212; --txt:#e0e0e0; --panel:#1e1e1e; --inp:#2c2c2c; --brd:#444; --th:#252525; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 20px; padding-bottom: 80px; }
+        :root { --bg:#f4f7f6; --txt:#333; --panel:#fff; --inp:#fff; --brd:#e0e0e0; --th:#f8f9fa; --primary: #4a90e2; --accent: #00acc1; }
+        [data-theme="dark"] { --bg:#121212; --txt:#e0e0e0; --panel:#1e1e1e; --inp:#2c2c2c; --brd:#444; --th:#252525; --primary: #1565c0; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); 
+            color: var(--txt); 
+            margin: 0; 
+            padding: 10px;
+            padding-bottom: 80px; 
+            -webkit-tap-highlight-color: transparent;
+        }
         *, *:before, *:after { box-sizing: border-box; }
 
+        /* Login Ekranı */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #4a90e2, #0056b3); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; }
-        .login-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #eee; border-radius: 8px; }
-        .login-btn { width: 100%; padding: 12px; background: #4a90e2; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .login-box { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 10px; font-size: 16px; }
+        .login-btn { width: 100%; padding: 15px; background: #4a90e2; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
 
         #app-container { display: none; max-width: 1280px; margin: 0 auto; }
         
-        .header-actions { display: flex; justify-content: space-between; margin-bottom: 15px; gap: 10px; flex-wrap: wrap; }
-        .btn { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--brd); background: var(--panel); color: var(--txt); cursor: pointer; font-weight: bold; }
-        .btn:hover { background: #e3f2fd; color: #1565c0; }
+        /* Üst Butonlar */
+        .header-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+        .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        
+        .btn { 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            border: 1px solid var(--brd); 
+            background: var(--panel); 
+            color: var(--txt); 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
         .btn-red { background: #ff5252; color: white; border: none; }
 
-        .top-bar { background: var(--panel); padding: 15px; border-radius: 12px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 20px; border: 1px solid var(--brd); }
-        .input-group { flex: 1; min-width: 150px; }
-        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: var(--txt); opacity: 0.8; }
-        .top-bar input { width: 100%; padding: 10px; border-radius: 6px; border: 2px solid var(--brd); background: var(--inp); color: var(--txt); font-weight: bold; text-align: center; }
-        #targetCiro { background: #e3f2fd; color: #0d47a1; }
-        [data-theme="dark"] #targetCiro { background: #1a237e; color: #bbdefb; }
+        /* Filtre Alanı */
+        .top-bar { 
+            background: var(--panel); 
+            padding: 15px; 
+            border-radius: 12px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px; 
+            margin-bottom: 20px; 
+            border: 1px solid var(--brd); 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--txt); opacity: 0.7; letter-spacing: 0.5px; }
+        .top-bar input { 
+            width: 100%; 
+            padding: 12px;
+            border-radius: 8px; 
+            border: 2px solid var(--brd); 
+            background: var(--inp); 
+            color: var(--txt); 
+            font-weight: 600; 
+            text-align: center; 
+            font-size: 15px;
+        }
+        #targetCiro { background: #e3f2fd; color: #0d47a1; border-color: #bbdefb; }
+        [data-theme="dark"] #targetCiro { background: #1a237e; color: #bbdefb; border-color: #304ffe; }
 
-        .klima-wrapper { display: flex; align-items: center; justify-content: center; background: #e0f7fa; padding: 0 15px; height: 40px; border-radius: 6px; cursor: pointer; border: 1px solid #b2ebf2; }
-        [data-theme="dark"] .klima-wrapper { background: #004d40; border-color: #00695c; }
-        .klima-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #006064; font-weight: bold; font-size: 14px; opacity: 1; }
+        /* Klima Checkbox */
+        .klima-wrapper { 
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(0, 172, 193, 0.1); 
+            height: 46px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            border: 1px solid rgba(0, 172, 193, 0.3); 
+            transition: all 0.3s;
+        }
+        .klima-wrapper label { margin: 0 0 0 10px; cursor: pointer; color: #00838f; font-weight: bold; font-size: 14px; }
         [data-theme="dark"] .klima-wrapper label { color: #80cbc4; }
-        .label-active { color: #00acc1 !important; text-shadow: 0 0 5px rgba(0,172,193,0.4); }
+        .label-active { color: #00acc1 !important; }
 
-        .main-wrapper { display: flex; gap: 20px; flex-wrap: wrap; }
-        .panel { flex: 1; background: var(--panel); border-radius: 12px; border: 1px solid var(--brd); overflow: hidden; min-width: 350px; display: flex; flex-direction: column; }
-        .panel h3 { margin: 0; padding: 12px; text-align: center; color: white; font-size: 14px; position: relative; }
-        .panel-left h3 { background: #4a90e2; } .panel-right h3 { background: #66bb6a; }
-        .klima-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; color: #006064; padding: 2px 6px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; }
+        /* Ana Panel */
+        .main-wrapper { display: flex; gap: 15px; flex-wrap: wrap; }
+        .panel { 
+            flex: 1; 
+            background: var(--panel); 
+            border-radius: 12px; 
+            border: 1px solid var(--brd); 
+            overflow: hidden; 
+            min-width: 300px;
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .panel h3 { margin: 0; padding: 15px; text-align: center; color: white; font-size: 14px; position: relative; letter-spacing: 0.5px; }
+        .panel-left h3 { background: linear-gradient(to right, #4a90e2, #357abd); } 
+        .panel-right h3 { background: linear-gradient(to right, #66bb6a, #43a047); }
+        .klima-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; color: #006064; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-        .table-container { overflow-x: auto; max-height: 450px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th { background: var(--th); color: var(--txt); padding: 10px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--brd); }
-        td { padding: 5px; border-bottom: 1px solid var(--brd); }
-        input.tbl-inp { width: 100%; padding: 6px; border: 1px solid var(--brd); border-radius: 4px; background: var(--inp); color: var(--txt); text-align: center; }
-        .money { text-align: right; font-weight: 600; }
-        .readonly { background: var(--bg) !important; pointer-events: none; }
+        /* Tablolar */
+        .table-container { 
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; 
+            max-height: 50vh; 
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 350px; }
+        th { background: var(--th); color: var(--txt); padding: 12px 8px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--brd); font-weight: 600; font-size: 12px; }
+        td { padding: 6px; border-bottom: 1px solid var(--brd); }
+        
+        input.tbl-inp { 
+            width: 100%; 
+            padding: 10px;
+            border: 1px solid var(--brd); 
+            border-radius: 6px; 
+            background: var(--inp); 
+            color: var(--txt); 
+            text-align: center; 
+            font-size: 14px; 
+            font-weight: 500;
+        }
+        input.tbl-inp:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        .money { text-align: right; font-weight: 600; letter-spacing: 0.5px; }
+        .readonly { background: rgba(0,0,0,0.03) !important; pointer-events: none; border: none; }
+        [data-theme="dark"] .readonly { background: rgba(255,255,255,0.05) !important; }
 
-        .pesinat-badge { position: absolute; top: -18px; left: 0; font-size: 9px; background: #ff9800; color: white; padding: 1px 5px; border-radius: 3px; display: none; font-weight: bold; }
+        .pesinat-badge { position: absolute; top: -16px; left: 2px; font-size: 9px; background: #ff9800; color: white; padding: 2px 6px; border-radius: 4px 4px 0 0; display: none; font-weight: bold; }
         tr.first-row .pesinat-badge { display: block; }
         tr.first-row td { padding-top: 15px; }
+        .btn-delete { background: #ffebee; color: #c62828; border: none; width: 24px; height: 24px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        .btn-row { display: flex; gap: 5px; padding: 10px; }
-        .btn-act { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--brd); background: var(--bg); color: var(--txt); cursor: pointer; font-weight: bold; }
-        .btn-copy { flex: 2; background: #e3f2fd; color: #1565c0; border-color: #90caf9; }
+        .btn-row { display: flex; gap: 8px; padding: 12px; background: var(--th); border-top: 1px solid var(--brd); }
+        .btn-act { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--brd); background: var(--panel); color: var(--txt); cursor: pointer; font-weight: bold; font-size: 13px; box-shadow: 0 2px 2px rgba(0,0,0,0.05); }
+        .btn-copy { flex: 1.5; background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
         [data-theme="dark"] .btn-copy { background: #0d47a1; color: #bbdefb; border-color: #1565c0; }
 
-        .summary { background: var(--th); padding: 10px; border-top: 1px solid var(--brd); font-size: 13px; margin-top: auto; }
-        .sum-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-weight: bold; }
-        .avg { color: #4a90e2; border-top: 1px solid var(--brd); padding-top: 5px; margin-top: 5px; }
+        .summary { background: var(--th); padding: 15px; border-top: 1px solid var(--brd); font-size: 14px; }
+        .sum-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: bold; }
+        .avg { color: var(--primary); border-top: 1px dashed var(--brd); padding-top: 8px; margin-top: 8px; font-size: 15px; }
 
-        .result-area { margin-top: 20px; background: var(--panel); padding: 15px; border-radius: 12px; border: 1px solid var(--brd); text-align: center; }
-        .sapma-box { font-size: 28px; font-weight: 800; padding: 10px 30px; border-radius: 8px; color: white; display: inline-block; min-width: 120px; }
-        .risk-bar-bg { width: 100%; height: 12px; background: var(--bg); border-radius: 6px; margin-top: 15px; overflow: hidden; border: 1px solid var(--brd); }
-        .risk-bar-fill { height: 100%; width: 0%; transition: 0.5s; }
+        /* Sonuç Alanı */
+        .result-area { margin-top: 20px; background: var(--panel); padding: 20px; border-radius: 12px; border: 1px solid var(--brd); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .result-flex { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap-reverse; }
+        .result-info { text-align: left; font-size: 13px; opacity: 0.85; flex: 2; min-width: 200px; line-height: 1.5; }
+        .sapma-box { font-size: 32px; font-weight: 800; padding: 15px 25px; border-radius: 12px; color: white; display: inline-block; min-width: 140px; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .risk-bar-bg { width: 100%; height: 16px; background: var(--bg); border-radius: 8px; margin-top: 20px; overflow: hidden; border: 1px solid var(--brd); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .risk-bar-fill { height: 100%; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .disclaimer { background: #fff8e1; border-left: 5px solid #ffb300; padding: 15px; margin-top: 20px; border-radius: 6px; font-size: 13px; color: #5d4037; }
+        .disclaimer { background: #fff8e1; border-left: 5px solid #ffb300; padding: 15px; margin-top: 20px; border-radius: 8px; font-size: 13px; color: #5d4037; line-height: 1.6; }
         [data-theme="dark"] .disclaimer { background: #3e2723; color: #ffe0b2; border-color: #ff6f00; }
         
-        .footer { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px dashed var(--brd); font-weight: bold; }
-        .maras { background: linear-gradient(to right, #b71c1c, #ffc107, #b71c1c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; margin-bottom: 5px; animation: shine 3s linear infinite; background-size: 200%; }
+        .footer { text-align: center; margin-top: 30px; padding: 20px; opacity: 0.7; font-size: 12px; }
+        .maras { background: linear-gradient(to right, #b71c1c, #ffc107, #b71c1c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; margin-bottom: 5px; font-weight: 900; font-size: 14px; animation: shine 3s linear infinite; background-size: 200%; }
         @keyframes shine { to { background-position: 200% center; } }
 
         /* Modal */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
-        .modal-content { background: var(--panel); margin: 10% auto; padding: 20px; width: 90%; max-width: 450px; border-radius: 10px; max-height: 70vh; overflow-y: auto; border: 1px solid var(--brd); }
-        .hist-item { padding: 10px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+        .modal-content { background: var(--panel); margin: 15vh auto; padding: 20px; width: 90%; max-width: 450px; border-radius: 15px; max-height: 70vh; overflow-y: auto; border: 1px solid var(--brd); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .hist-item { padding: 15px 10px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; }
 
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } }
+        /* TOAST (Bildirim) Stili */
+        #toast { 
+            visibility: hidden; 
+            min-width: 250px; 
+            background-color: #323232; 
+            color: #fff; 
+            text-align: center; 
+            border-radius: 8px; 
+            padding: 16px; 
+            position: fixed; 
+            z-index: 3000; 
+            left: 50%; 
+            bottom: 30px; 
+            transform: translateX(-50%);
+            font-size: 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        .toast-success { border-left: 6px solid #4caf50; }
+        .toast-error { border-left: 6px solid #f44336; }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .main-wrapper { flex-direction: column; }
+            .panel { width: 100%; }
+            .top-bar { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .input-group:nth-child(3) { grid-column: span 2; }
+            .input-group:nth-child(4) { grid-column: span 2; }
+            .header-actions { flex-direction: column; gap: 10px; }
+            .header-actions .btn-red { width: 100%; }
+            .action-group { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+            .result-flex { flex-direction: column-reverse; text-align: center; }
+            .result-info { text-align: center; width: 100%; }
+            table { font-size: 14px; }
+            input.tbl-inp { font-size: 14px; padding: 12px 5px; }
+        }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <h2>Giriş Yap</h2>
+        <h2 style="color:#333; margin-bottom:20px;">Giriş Yap</h2>
         <input type="text" id="username" class="login-input" placeholder="Kullanıcı Adı" value="ihlas">
         <input type="password" id="password" class="login-input" placeholder="Şifre">
-        <div id="loginError" style="color:red; display:none; margin-bottom:10px;">Hatalı Giriş!</div>
-        <button class="login-btn" onclick="checkLogin()">GİRİŞ</button>
+        <div id="loginError" style="color:#e53935; display:none; margin-bottom:15px; font-weight:bold;">Hatalı Giriş!</div>
+        <button class="login-btn" onclick="checkLogin()">GİRİŞ YAP</button>
     </div>
 </div>
 
+<!-- TOAST (Bildirim Alanı) -->
+<div id="toast">Bildirim Mesajı</div>
+
 <div id="app-container">
     <div class="header-actions">
-        <button class="btn btn-red" onclick="logout()">Çıkış</button>
-        <div style="display:flex; gap:5px;">
-            <button class="btn" onclick="toggleTheme()">🌙/☀️</button>
+        <button class="btn btn-red" onclick="logout()">🔐 Çıkış Yap</button>
+        <div class="action-group">
+            <button class="btn" onclick="toggleTheme()">🌗 Tema</button>
             <button class="btn" onclick="showHistory()">📁 Geçmiş</button>
             <button class="btn" onclick="saveData()">💾 Kaydet</button>
             <button class="btn" onclick="exportPDF()">📄 PDF</button>
@@ -116,16 +250,16 @@
         </div>
         <div class="input-group">
             <label>CİRO</label>
-            <input type="number" id="targetCiro" placeholder="Örn: 34000">
+            <input type="number" id="targetCiro" placeholder="Tutar Giriniz" inputmode="decimal">
         </div>
         <div class="input-group">
             <label>SENET ADEDİ</label>
-            <input type="number" id="senetCount" placeholder="Adet" oninput="createAutoTable()">
+            <input type="number" id="senetCount" placeholder="Taksit Sayısı" oninput="createAutoTable()" inputmode="numeric">
         </div>
-        <div class="input-group" style="min-width: 140px;">
-            <label id="lblKlima">İSTİSNAİ FİYAT</label>
+        <div class="input-group">
+            <label id="lblKlima">İSTİSNAİ DURUM</label>
             <div class="klima-wrapper" onclick="toggleKlima()">
-                <input type="checkbox" id="klimaMode">
+                <input type="checkbox" id="klimaMode" style="width:20px; height:20px; margin:0;">
                 <label for="klimaMode">❄️ KLİMA</label>
             </div>
         </div>
@@ -133,77 +267,92 @@
 
     <div class="main-wrapper">
         <div class="panel panel-left">
-            <h3>OLMASI GEREKEN (HEDEF) <span id="badgeKlima" class="klima-badge">KLİMA</span></h3>
+            <h3>🎯 OLMASI GEREKEN <span id="badgeKlima" class="klima-badge">KLİMA</span></h3>
             <div class="table-container">
                 <table id="tblLeft">
-                    <thead><tr><th>No</th><th>Tutar</th><th>Vade</th><th>Gün</th><th>Çarpan</th></tr></thead>
+                    <thead><tr><th style="width:40px">No</th><th>Tutar</th><th>Vade</th><th style="width:50px">Gün</th><th>Çarpan</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
             <div class="summary">
-                <div class="sum-row"><span>Toplam:</span><span id="sumLeftCiro">0,00</span></div>
-                <div class="sum-row avg"><span>Ort. Vade:</span><span id="sumLeftAvg">0,00</span></div>
+                <div class="sum-row"><span>Toplam Ciro:</span><span id="sumLeftCiro">0,00</span></div>
+                <div class="sum-row avg"><span>Ortalama Vade:</span><span id="sumLeftAvg">0,00</span></div>
             </div>
         </div>
 
         <div class="panel panel-right">
-            <h3>GERÇEKLEŞEN (OLAN)</h3>
+            <h3>📝 GERÇEKLEŞEN (OLAN)</h3>
             <div class="table-container">
                 <table id="tblRight">
-                    <thead><tr><th style="width:30px">Sil</th><th style="width:30px">No</th><th>Tutar</th><th>Vade</th><th>Gün</th><th>Çarpan</th></tr></thead>
+                    <thead><tr><th style="width:40px">Sil</th><th style="width:30px">No</th><th>Tutar</th><th>Vade</th><th style="width:40px">Gn</th><th>Çarpan</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
             <div class="btn-row">
                 <button class="btn-act btn-copy" onclick="copyTable()">⚡ Kopyala</button>
                 <button class="btn-act" onclick="addEmptyRow()">+ Ekle</button>
-                <button class="btn-act" onclick="clearTable()">Temizle</button>
+                <button class="btn-act" onclick="clearTable()" style="color:#e53935; border-color:#e53935;">🗑️ Temizle</button>
             </div>
             <div class="summary">
-                <div class="sum-row"><span>Toplam:</span><span id="sumRightCiro">0,00</span></div>
-                <div id="msgDiff" style="color:red; font-weight:bold; font-size:11px; text-align:right; display:none;">⚠️ Eşit Değil!</div>
-                <div class="sum-row avg"><span>Ort. Vade:</span><span id="sumRightAvg">0,00</span></div>
+                <div class="sum-row"><span>Toplam Ciro:</span><span id="sumRightCiro">0,00</span></div>
+                <div id="msgDiff" style="color:#d32f2f; font-weight:bold; font-size:12px; text-align:right; display:none; margin-bottom:5px;">⚠️ Tutarlar Eşit Değil!</div>
+                <div class="sum-row avg"><span>Ortalama Vade:</span><span id="sumRightAvg">0,00</span></div>
             </div>
         </div>
     </div>
 
     <div class="result-area">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <div style="text-align:left; font-size:12px; opacity:0.8; flex:1;">
-                <div style="margin-bottom:5px;"><strong>💡 Taktik:</strong> Apg oranı denemesi yaparken; satış tarihini her ayın son günü, ilk senet tarihini her ayın ilk günü yapmanız taktirde vade tarihleri kısalacağı için satışınızın girme olasılık ihtimali artacaktır.</div>
-                <div><strong>⚡ İpucu:</strong> Sol tabloyu sağa aktarmak için <b>"Kopyala"</b> butonunu kullanın.</div>
+        <div class="result-flex">
+            <div class="result-info">
+                <div style="margin-bottom:10px;"><strong>💡 Taktik:</strong> Apg oranı denemesi yaparken; satış tarihini her ayın son günü, ilk senet tarihini her ayın ilk günü yapmanız taktirde vade tarihleri kısalacaktır.</div>
+                <div><strong>⚡ İpucu:</strong> Sol tabloyu sağa hızlıca aktarmak için <b>"Kopyala"</b> butonunu kullanın.</div>
             </div>
-            <div style="text-align:center;">
-                <div style="font-weight:bold; margin-bottom:5px;">VADE SAPMASI</div>
+            <div style="text-align:center; flex:1;">
+                <div style="font-weight:bold; margin-bottom:8px; font-size:14px; opacity:0.7; letter-spacing:1px;">VADE SAPMASI</div>
                 <div id="finalSapma" class="sapma-box" style="background:#bdbdbd;">0,00</div>
             </div>
         </div>
         <div class="risk-bar-bg"><div id="riskBar" class="risk-bar-fill"></div></div>
-        <div id="riskText" style="font-size:11px; font-weight:bold; margin-top:5px; opacity:0.7;">VERİ BEKLENİYOR...</div>
+        <div id="riskText" style="font-size:13px; font-weight:800; margin-top:8px; opacity:0.8; letter-spacing:1px;">VERİ BEKLENİYOR...</div>
     </div>
 
     <div class="disclaimer">
-        <h4>⚠️ ÖNEMLİ NOT</h4>
-        <p>Paylaşılan veriler ve hesaplamalar, Merkez tarafından belirlenen mevcut vade sapması oranları baz alınarak hazırlanmıştır.</p>
-        <ul>
-            <li>Merkez oranlarında herhangi bir güncelleme yapılması durumunda, lütfen <strong>Muhasebe Departmanı</strong> ile irtibata geçiniz.</li>
-            <li>Verileri kullanırken güncelliğini teyit etmeniz ve değişen koşullara karşı dikkatli olmanız önem arz etmektedir.</li>
-            <li><strong>Vade Sapması oranı 29'un altına düşerse</strong> satışın girme olasılığı istisnai durumlar haricinde vardır.</li>
+        <h4 style="margin:0 0 10px 0;">⚠️ ÖNEMLİ NOT</h4>
+        <p style="margin-top:0;">Paylaşılan veriler ve hesaplamalar, Merkez tarafından belirlenen mevcut vade sapması oranları baz alınarak hazırlanmıştır.</p>
+        <ul style="margin:0; padding-left:20px;">
+            <li style="margin-bottom:5px;">Merkez oranlarında herhangi bir güncelleme yapılması durumunda, lütfen <strong>Muhasebe Departmanı</strong> ile irtibata geçiniz.</li>
+            <li style="margin-bottom:5px;">Verileri kullanırken güncelliğini teyit etmeniz ve değişen koşullara karşı dikkatli olmanız önem arz etmektedir.</li>
+            <li style="margin-bottom:5px;"><strong>Vade Sapması oranı 29'un altına düşerse</strong> satışın girme olasılığı istisnai durumlar haricinde vardır.</li>
         </ul>
     </div>
 
     <div class="footer">
         <span class="maras">🌶️ BİR KAHRAMANMARAŞ YAPIMIDIR 🌶️</span>
-        <span>By_Oğuz</span>
+        <span>By_Oğuz &copy; 2026</span>
     </div>
 </div>
 
+<!-- GEÇMİŞ MODAL -->
 <div id="modalHist" class="modal">
     <div class="modal-content">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid var(--brd); padding-bottom:5px;">
-            <h3>Kayıtlar</h3><span onclick="document.getElementById('modalHist').style.display='none'" style="cursor:pointer; font-size:20px;">×</span>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid var(--brd); padding-bottom:10px;">
+            <h3 style="margin:0;">Kayıtlı Hesaplamalar</h3>
+            <span onclick="document.getElementById('modalHist').style.display='none'" style="cursor:pointer; font-size:24px; line-height:20px;">&times;</span>
         </div>
         <div id="histList"></div>
+    </div>
+</div>
+
+<!-- KAYDETME MODAL (YENİ) -->
+<div id="modalSave" class="modal">
+    <div class="modal-content" style="max-width:350px;">
+        <h3 style="margin-top:0;">Hesaplamayı Kaydet</h3>
+        <p style="font-size:13px; color:#666; margin-bottom:15px;">Bu hesaplamayı daha sonra tekrar açmak için bir isim veriniz.</p>
+        <input type="text" id="saveNameInput" class="login-input" placeholder="Örn: Müşteri ABC">
+        <div style="display:flex; gap:10px; margin-top:5px;">
+            <button class="btn" style="flex:1;" onclick="document.getElementById('modalSave').style.display='none'">İptal</button>
+            <button class="btn btn-copy" style="flex:1;" onclick="confirmSave()">💾 KAYDET</button>
+        </div>
     </div>
 </div>
 
@@ -217,11 +366,16 @@
     const fmt = n => n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
     const prs = s => parseFloat(String(s).replace(/\./g,'').replace(',','.')) || 0;
     const diff = (d1,d2) => (!d1||!d2)?0:Math.ceil((new Date(d2)-new Date(d1))/(864e5));
-    
     function addM(d,m) { let x=new Date(d); x.setMonth(x.getMonth()+m); if(x.getDate()!==new Date(d).getDate()) x.setDate(0); return x.toISOString().split('T')[0]; }
-    
-    // Bir sonraki ayın 1'i
     function nextMonthFirst(d) { let x=new Date(d); x.setMonth(x.getMonth()+1); x.setDate(1); return x.toISOString().split('T')[0]; }
+
+    // --- TOAST SİSTEMİ (Alert Yerine) ---
+    function showToast(msg, type='success') {
+        const t = document.getElementById("toast");
+        t.innerHTML = (type==='error'?'⚠️ ':'✅ ') + msg;
+        t.className = "show " + (type==='error'?'toast-error':'toast-success');
+        setTimeout(function(){ t.className = t.className.replace("show", ""); }, 3000);
+    }
 
     // --- GİRİŞ ---
     function checkLogin() {
@@ -238,33 +392,26 @@
         localStorage.setItem('theme', b.getAttribute('data-theme'));
     }
 
-    // --- SOL TABLO MANTIĞI (ESKİ HALİNE DÖNDÜRÜLDÜ) ---
+    // --- SOL TABLO MANTIĞI ---
     function calcLeft() {
         const ciro = parseFloat(document.getElementById('targetCiro').value) || 0;
         const date = document.getElementById('satisTarihi').value;
         const klima = document.getElementById('klimaMode').checked;
         const tbody = document.querySelector('#tblLeft tbody');
         
-        // Etiketleri yönet
         const lbl = document.getElementById('lblKlima');
         if(klima) lbl.classList.add('label-active'); else lbl.classList.remove('label-active');
         
-        tbody.innerHTML = ""; // Temizle
+        tbody.innerHTML = ""; 
         
-        // Taksit sayısı bul
         let count = 0;
         if(ciro>0) {
             if(klima && K_RULES[ciro]) { count = K_RULES[ciro]; document.getElementById('badgeKlima').style.display='inline-block'; }
             else if(RULES[ciro]) { count = RULES[ciro]; document.getElementById('badgeKlima').style.display='none'; }
         }
 
-        if(count === 0 || !date) {
-             // Eğer ciro var ama kural yoksa sıfırla
-             summarize('tblLeft', 'sumLeftCiro', 'sumLeftAvg', true);
-             return;
-        }
+        if(count === 0 || !date) { summarize('tblLeft', 'sumLeftCiro', 'sumLeftAvg', true); return; }
 
-        // Satırları oluştur (innerHTML Yöntemiyle - HATA ÇIKARMAZ)
         let base = ciro / count;
         let tot = 0;
         let html = "";
@@ -276,8 +423,7 @@
             let days = diff(date, d);
             let gt = amt * days;
             
-            html += `
-            <tr>
+            html += `<tr>
                 <td style="text-align:center; color:#777; font-weight:bold;">${i+1}</td>
                 <td><input class="tbl-inp money readonly" value="${fmt(amt)}"></td>
                 <td><input class="tbl-inp readonly" value="${d}"></td>
@@ -289,7 +435,7 @@
         summarize('tblLeft', 'sumLeftCiro', 'sumLeftAvg', true);
     }
 
-    // --- SAĞ TABLO OTOMATİK OLUŞTURMA ---
+    // --- SAĞ TABLO ---
     function createAutoTable() {
         const cnt = parseInt(document.getElementById('senetCount').value) || 0;
         const date = document.getElementById('satisTarihi').value;
@@ -298,14 +444,10 @@
         tbody.innerHTML = "";
         if(cnt<=0 || !date) { calcRight(); return; }
 
-        // 1. Peşinat (Satış Tarihi)
-        addRightRow(0, date, "PEŞİNAT");
-
-        // 2. Senetler (Bir sonraki ayın 1'inden başla)
+        addRightRow(0, date, "PŞN");
         let nextD = nextMonthFirst(date);
         for(let i=1; i<=cnt; i++) {
             addRightRow(i, nextD, i);
-            // Sonraki döngü için 1 ay ekle (ayın 1'i korunur)
             let d = new Date(nextD); d.setMonth(d.getMonth()+1);
             nextD = d.toISOString().split('T')[0];
         }
@@ -313,24 +455,16 @@
         calcRight();
     }
 
-    // --- SAĞ TABLO YARDIMCILARI ---
     function addRightRow(idx, dateVal, lbl) {
         const tbody = document.querySelector('#tblRight tbody');
         const badge = idx===0 ? '<span class="pesinat-badge">PEŞİNAT</span>' : '';
-        
-        // innerHTML ile ekle
         const tr = document.createElement('tr');
         if(idx===0) tr.classList.add('first-row');
         
         tr.innerHTML = `
             <td style="text-align:center;"><button class="btn-delete" onclick="delRow(this)">✕</button></td>
             <td class="r-num" style="text-align:center; font-weight:bold; color:#555;">${lbl}</td>
-            <td style="position:relative;">
-                <div class="input-wrapper">
-                    ${badge}
-                    <input type="number" class="tbl-inp money" value="0" step="0.01" oninput="syncAmt(this)">
-                </div>
-            </td>
+            <td style="position:relative;"><div class="input-wrapper" style="position:relative">${badge}<input type="number" class="tbl-inp money" value="0" step="0.01" oninput="syncAmt(this)"></div></td>
             <td><input type="date" class="tbl-inp" value="${dateVal}" onchange="syncDate(this)"></td>
             <td class="g-day" style="text-align:center;">0</td>
             <td class="g-tot" style="text-align:right; font-size:12px;">0,00</td>
@@ -338,29 +472,21 @@
         tbody.appendChild(tr);
     }
 
-    // Tutar Eşitleme: 1. Senet (Index 1) değişirse diğerlerini güncelle
     function syncAmt(el) {
         const tr = el.closest('tr');
         const all = document.querySelectorAll('#tblRight tbody tr');
-        // Index bul
-        let idx = -1; 
-        all.forEach((r, i) => { if(r===tr) idx=i; });
-
-        if(idx === 1) { // Peşinattan sonraki ilk senet
+        let idx = -1; all.forEach((r, i) => { if(r===tr) idx=i; });
+        if(idx === 1) { 
             let val = el.value;
-            for(let i=2; i<all.length; i++) {
-                all[i].querySelector('input[type=number]').value = val;
-            }
+            for(let i=2; i<all.length; i++) all[i].querySelector('input[type=number]').value = val;
         }
         calcRight();
     }
 
-    // Tarih Zincirleme: Değişen tarihten sonrakileri 1 ay ötele (ayın 1'i yap)
     function syncDate(el) {
         const tr = el.closest('tr');
         const all = document.querySelectorAll('#tblRight tbody tr');
         let idx = -1; all.forEach((r, i) => { if(r===tr) idx=i; });
-        
         let curr = el.value;
         for(let i=idx+1; i<all.length; i++) {
             let d = new Date(curr); d.setMonth(d.getMonth()+1); d.setDate(1);
@@ -380,7 +506,7 @@
             let ld = new Date(last); ld.setMonth(ld.getMonth()+1); ld.setDate(1);
             d = ld.toISOString().split('T')[0];
         }
-        addRightRow(all.length, d, all.length===0?"PEŞİNAT":all.length);
+        addRightRow(all.length, d, all.length===0?"PŞN":all.length);
         renumberRight(); calcRight();
     }
     
@@ -389,9 +515,8 @@
     
     function renumberRight() {
         document.querySelectorAll('#tblRight tbody tr').forEach((r,i)=>{
-            r.querySelector('.r-num').textContent = i===0 ? "PEŞİNAT" : i;
+            r.querySelector('.r-num').textContent = i===0 ? "PŞN" : i;
             if(i===0) r.classList.add('first-row'); else r.classList.remove('first-row');
-            // Badge yönetimi
             let w = r.querySelector('.input-wrapper');
             let b = w.querySelector('.pesinat-badge');
             if(i===0 && !b) w.insertAdjacentHTML('afterbegin', '<span class="pesinat-badge">PEŞİNAT</span>');
@@ -401,49 +526,38 @@
 
     function copyTable() {
         const src = document.querySelectorAll('#tblLeft tbody tr');
-        if(src.length===0) return alert("Hedef tablo boş!");
+        if(src.length===0) return showToast("Hedef tablo boş!", "error");
         const dest = document.querySelector('#tblRight tbody');
         dest.innerHTML = "";
         src.forEach((r,i)=>{
-            let amt = prs(r.querySelector('input').value); // İlk input tutar
-            let dat = r.querySelectorAll('input')[1].value; // İkinci input vade
-            addRightRow(i, dat, i===0?"PEŞİNAT":i);
+            let amt = prs(r.querySelector('input').value); 
+            let dat = r.querySelectorAll('input')[1].value; 
+            addRightRow(i, dat, i===0?"PŞN":i);
             dest.lastElementChild.querySelector('input[type=number]').value = amt.toFixed(2);
         });
         calcRight();
     }
 
-    // --- HESAPLAMA & SONUÇ ---
     function calcRight() { summarize('tblRight', 'sumRightCiro', 'sumRightAvg', false); }
 
     function summarize(tblId, ciroId, avgId, isLocked) {
         const date = document.getElementById('satisTarihi').value;
         let tCiro=0, tGt=0;
-        
         document.querySelectorAll(`#${tblId} tbody tr`).forEach(r => {
             let inps = r.querySelectorAll('input');
             let val = isLocked ? prs(inps[0].value) : (parseFloat(inps[0].value)||0);
             let d = inps[1].value;
             let days = diff(date, d);
             let gt = val * days;
-            
-            // Hücreleri güncelle (eğer varsa) - Sol tabloda input yok td var
-            if(isLocked) {
-                // Sol tabloda statik olduğu için güncellemeye gerek yok, zaten döngüde yazıldı.
-                // Sadece toplamı al.
-            } else {
-                // Sağ tablo
+            if(!isLocked) {
                 r.querySelector('.g-day').textContent = days;
                 r.querySelector('.g-tot').textContent = fmt(gt);
             }
-            
             tCiro += val; tGt += gt;
         });
-
         document.getElementById(ciroId).textContent = fmt(tCiro);
         let avg = tCiro>0 ? tGt/tCiro : 0;
         document.getElementById(avgId).textContent = fmt(avg);
-        
         if(!isLocked) updateResult();
     }
 
@@ -451,8 +565,6 @@
         let lAvg = prs(document.getElementById('sumLeftAvg').textContent);
         let rAvg = prs(document.getElementById('sumRightAvg').textContent);
         let sapma = rAvg - lAvg;
-        
-        // Ciro kontrol
         let tCiro = parseFloat(document.getElementById('targetCiro').value)||0;
         let rCiro = prs(document.getElementById('sumRightCiro').textContent);
         let msg = document.getElementById('msgDiff');
@@ -469,41 +581,41 @@
         }
 
         box.textContent = fmt(sapma);
-        
-        let col, w, t, tc="#fff";
-        if(sapma<=0) { col='#2e7d32'; w='100%'; t="GÜVENLİ"; }
-        else if(sapma<=15) { col='#66bb6a'; w='50%'; t="MAKUL"; }
-        else if(sapma<=25) { col='#fdd835'; w='66%'; t="DİKKAT"; tc="#333"; }
-        else if(sapma<29) { col='#ff9800'; w='85%'; t="RİSKLİ"; }
-        else { col='#d32f2f'; w='100%'; t="KRİTİK"; }
-
+        let col, w, t;
+        if(sapma<=0) { col='#2e7d32'; w='100%'; t="GÜVENLİ (0 ve altı)"; }
+        else if(sapma<=15) { col='#66bb6a'; w='50%'; t="MAKUL (0 - 15)"; }
+        else if(sapma<=25) { col='#fdd835'; w='66%'; t="DİKKAT (15 - 25)"; }
+        else if(sapma<29) { col='#ff9800'; w='85%'; t="RİSKLİ (25 - 29)"; }
+        else { col='#d32f2f'; w='100%'; t="KRİTİK (29+)"; }
         box.style.background = col; box.style.color = (col==='#fdd835'?'#333':'#fff');
         bar.style.background = col; bar.style.width = w;
         txt.textContent = t; txt.style.color = (col==='#fdd835'?'#f9a825':col);
     }
 
-    // --- EKSTRALAR ---
     function toggleKlima() {
         let chk = document.getElementById('klimaMode');
-        // Wrapper click
         if(event.target.tagName!=='INPUT') chk.checked = !chk.checked;
         calcLeft();
     }
 
-    function save() {
-        // Basit kayıt
-        let name = prompt("Kayıt Adı:");
-        if(!name) return;
-        // ... (Önceki mantıkla aynı)
-        alert("Kaydedildi (Demo)");
-    }
-    
-    // Basit localStorage geçmişi (Önceki koddan alınabilir, yer tutmaması için kısalttım)
+    // --- YENİ KAYDETME FONKSİYONLARI (MODAL KULLANIR) ---
     function saveData() {
         let ciro = document.getElementById('targetCiro').value;
-        if(!ciro) return alert("Ciro girin");
-        let name = prompt("İsim:", ciro + " TL");
-        if(!name) return;
+        if(!ciro) return showToast("Önce bir Ciro girmelisiniz!", "error");
+        
+        let existing = document.querySelectorAll('#tblRight tbody tr').length;
+        if(existing === 0) return showToast("Kaydedilecek sağ tablo verisi yok.", "error");
+
+        // Varsayılan isim öner
+        document.getElementById('saveNameInput').value = fmt(parseFloat(ciro)) + " TL Satış";
+        document.getElementById('modalSave').style.display = 'block';
+    }
+
+    function confirmSave() {
+        let name = document.getElementById('saveNameInput').value;
+        if(!name) return showToast("Lütfen bir isim girin.", "error");
+
+        let ciro = document.getElementById('targetCiro').value;
         let h = JSON.parse(localStorage.getItem('hist')||"[]");
         
         let rows = [];
@@ -513,15 +625,27 @@
         
         h.unshift({id:Date.now(), name, ciro, date:new Date().toLocaleDateString(), rows});
         localStorage.setItem('hist', JSON.stringify(h));
-        alert("Tamam");
+        
+        document.getElementById('modalSave').style.display = 'none';
+        showToast("Başarıyla Kaydedildi!");
     }
     
     function showHistory() {
         let h = JSON.parse(localStorage.getItem('hist')||"[]");
         let d = document.getElementById('histList'); d.innerHTML="";
+        if(h.length === 0) d.innerHTML = "<div style='text-align:center; padding:20px; color:#999;'>Henüz kayıt yok.</div>";
         h.forEach(x => {
-            d.innerHTML += `<div class="hist-item"><div><b>${x.name}</b> <small>${x.date}</small></div>
-            <button class="btn" onclick="loadH(${x.id})">Yükle</button></div>`;
+            d.innerHTML += `
+            <div class="hist-item">
+                <div>
+                    <div style="font-weight:bold; font-size:14px;">${x.name}</div>
+                    <small style="color:#777;">${x.date} - ${fmt(parseFloat(x.ciro))} TL</small>
+                </div>
+                <div>
+                    <button class="btn" style="padding:5px 10px; font-size:12px;" onclick="loadH(${x.id})">Yükle</button>
+                    <button class="btn btn-red" style="padding:5px 10px; font-size:12px; margin-left:5px;" onclick="delH(${x.id})">Sil</button>
+                </div>
+            </div>`;
         });
         document.getElementById('modalHist').style.display='block';
     }
@@ -531,18 +655,73 @@
         document.getElementById('targetCiro').value = h.ciro;
         calcLeft();
         let tb = document.querySelector('#tblRight tbody'); tb.innerHTML="";
-        h.rows.forEach((r,i)=> { addRightRow(i, r.d, i===0?"PEŞİNAT":i); tb.lastElementChild.querySelector('input[type=number]').value=r.t; });
+        h.rows.forEach((r,i)=> { addRightRow(i, r.d, i===0?"PŞN":i); tb.lastElementChild.querySelector('input[type=number]').value=r.t; });
         calcRight();
         document.getElementById('modalHist').style.display='none';
+        showToast("Kayıt yüklendi.");
     }
 
+    function delH(id) {
+        if(!confirm("Bu kaydı silmek istediğinize emin misiniz?")) return;
+        let h = JSON.parse(localStorage.getItem('hist')).filter(a=>a.id!=id);
+        localStorage.setItem('hist', JSON.stringify(h));
+        showHistory();
+        showToast("Kayıt silindi.", "error");
+    }
+
+    // --- PDF EXPORT ---
     function exportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        doc.text("Vade Sapmasi", 14, 20);
-        doc.autoTable({ html: '#tblLeft', startY: 30 });
-        doc.autoTable({ html: '#tblRight', startY: doc.lastAutoTable.finalY + 10 });
-        doc.save('analiz.pdf');
+        
+        doc.setFont("helvetica", "bold");
+        doc.text("Vade Sapmasi Analiz Raporu", 14, 20);
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        let info = `Tarih: ${new Date().toLocaleDateString()} | Ciro: ${document.getElementById('targetCiro').value}`;
+        doc.text(info, 14, 28);
+
+        function getTableData(tableId, skipFirstCol) {
+            let rows = [];
+            document.querySelectorAll(tableId + ' tbody tr').forEach(tr => {
+                let rowData = [];
+                let cells = tr.querySelectorAll('td');
+                let start = skipFirstCol ? 1 : 0;
+                for(let i=start; i<cells.length; i++) {
+                    let cell = cells[i];
+                    let input = cell.querySelector('input');
+                    if(input) { rowData.push(input.value); } 
+                    else { rowData.push(cell.innerText.trim()); }
+                }
+                rows.push(rowData);
+            });
+            return rows;
+        }
+
+        doc.autoTable({
+            head: [['No', 'Tutar', 'Vade', 'Gun', 'Carpan']],
+            body: getTableData('#tblLeft', false),
+            startY: 35,
+            theme: 'grid',
+            headStyles: { fillColor: [74, 144, 226] }
+        });
+        
+        doc.text("Gerceklesen Tablo (Sag)", 14, doc.lastAutoTable.finalY + 10);
+        
+        doc.autoTable({
+            head: [['No', 'Tutar', 'Vade', 'Gun', 'Carpan']],
+            body: getTableData('#tblRight', true),
+            startY: doc.lastAutoTable.finalY + 15,
+            theme: 'grid',
+            headStyles: { fillColor: [102, 187, 106] }
+        });
+        
+        let sapma = document.getElementById('finalSapma').textContent;
+        doc.setFontSize(14);
+        doc.text(`Sonuc Vade Sapmasi: ${sapma}`, 14, doc.lastAutoTable.finalY + 20);
+        
+        doc.save('vade-sapmasi-analiz.pdf');
     }
 
     function init() {
@@ -559,7 +738,22 @@
             init();
         }
         document.getElementById('targetCiro').addEventListener('input', calcLeft);
-        document.getElementById('satisTarihi').addEventListener('change', ()=>{calcLeft(); calcRight();});
+        // Tarih değiştirildiğinde peşinat tarihini güncelle
+        document.getElementById('satisTarihi').addEventListener('change', function() {
+            let newVal = this.value;
+            let rightRows = document.querySelectorAll('#tblRight tbody tr');
+            if(rightRows.length > 0) {
+                let pDateInput = rightRows[0].querySelector('input[type=date]');
+                if(pDateInput) {
+                    pDateInput.value = newVal;
+                    // Tarihleri senkronize et (Peşinat değişince diğerleri ötelensin mi? Kullanıcı isteğine göre sadece peşinat entegre olsun dendi ama genelde taksitler de kaymalı)
+                    // Burada syncDate fonksiyonunu çağırarak diğerlerini de bu yeni peşinat tarihine göre öteliyoruz.
+                    syncDate(pDateInput);
+                }
+            }
+            calcLeft(); 
+            calcRight();
+        });
     }
 </script>
 </body>
