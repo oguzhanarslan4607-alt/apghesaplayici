@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vade Sapması Analizi (Mobil Uyumlu)</title>
+    <title>Vade Sapma Analizi</title>
     
     <!-- PDF Kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -586,7 +586,9 @@
         else if(sapma<=15) { col='#66bb6a'; w='50%'; t="MAKUL (0 - 15)"; }
         else if(sapma<=25) { col='#fdd835'; w='66%'; t="DİKKAT (15 - 25)"; }
         else if(sapma<29) { col='#ff9800'; w='85%'; t="RİSKLİ (25 - 29)"; }
-        else { col='#d32f2f'; w='100%'; t="KRİTİK (29+)"; }
+        else if(sapma<30) { col='#d32f2f'; w='95%'; t="KRİTİK (29 - 30)"; }
+        else { col='#8b0000'; w='100%'; t="GİRMEZ (30+)"; }
+        
         box.style.background = col; box.style.color = (col==='#fdd835'?'#333':'#fff');
         bar.style.background = col; bar.style.width = w;
         txt.textContent = t; txt.style.color = (col==='#fdd835'?'#f9a825':col);
