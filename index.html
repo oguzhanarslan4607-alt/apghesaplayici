@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Vade Sapma Analizi</title>
     
-    <!-- PDF Kütüphaneleri -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
@@ -14,7 +13,7 @@
         [data-theme="dark"] { --bg:#121212; --txt:#e0e0e0; --panel:#1e1e1e; --inp:#2c2c2c; --brd:#444; --th:#252525; --primary: #1565c0; }
         
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg); 
             color: var(--txt); 
             margin: 0; 
@@ -37,7 +36,7 @@
         .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
         
         .btn { 
-            padding: 10px 15px; 
+            padding: 10px 15px;
             border-radius: 8px; 
             border: 1px solid var(--brd); 
             background: var(--panel); 
@@ -56,19 +55,19 @@
 
         /* Filtre Alanı */
         .top-bar { 
-            background: var(--panel); 
+            background: var(--panel);
             padding: 15px; 
             border-radius: 12px; 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px; 
             margin-bottom: 20px; 
-            border: 1px solid var(--brd); 
+            border: 1px solid var(--brd);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .input-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--txt); opacity: 0.7; letter-spacing: 0.5px; }
         .top-bar input { 
-            width: 100%; 
+            width: 100%;
             padding: 12px;
             border-radius: 8px; 
             border: 2px solid var(--brd); 
@@ -83,11 +82,12 @@
 
         /* Klima Checkbox */
         .klima-wrapper { 
-            display: flex; align-items: center; justify-content: center; 
+            display: flex;
+            align-items: center; justify-content: center; 
             background: rgba(0, 172, 193, 0.1); 
             height: 46px; 
             border-radius: 8px; 
-            cursor: pointer; 
+            cursor: pointer;
             border: 1px solid rgba(0, 172, 193, 0.3); 
             transition: all 0.3s;
         }
@@ -98,14 +98,14 @@
         /* Ana Panel */
         .main-wrapper { display: flex; gap: 15px; flex-wrap: wrap; }
         .panel { 
-            flex: 1; 
+            flex: 1;
             background: var(--panel); 
             border-radius: 12px; 
             border: 1px solid var(--brd); 
             overflow: hidden; 
             min-width: 300px;
             display: flex; 
-            flex-direction: column; 
+            flex-direction: column;
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
         .panel h3 { margin: 0; padding: 15px; text-align: center; color: white; font-size: 14px; position: relative; letter-spacing: 0.5px; }
@@ -124,7 +124,7 @@
         td { padding: 6px; border-bottom: 1px solid var(--brd); }
         
         input.tbl-inp { 
-            width: 100%; 
+            width: 100%;
             padding: 10px;
             border: 1px solid var(--brd); 
             border-radius: 6px; 
@@ -175,7 +175,7 @@
 
         /* TOAST (Bildirim) Stili */
         #toast { 
-            visibility: hidden; 
+            visibility: hidden;
             min-width: 250px; 
             background-color: #323232; 
             color: #fff; 
@@ -185,7 +185,7 @@
             position: fixed; 
             z-index: 3000; 
             left: 50%; 
-            bottom: 30px; 
+            bottom: 30px;
             transform: translateX(-50%);
             font-size: 15px; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -229,7 +229,6 @@
     </div>
 </div>
 
-<!-- TOAST (Bildirim Alanı) -->
 <div id="toast">Bildirim Mesajı</div>
 
 <div id="app-container">
@@ -332,7 +331,6 @@
     </div>
 </div>
 
-<!-- GEÇMİŞ MODAL -->
 <div id="modalHist" class="modal">
     <div class="modal-content">
         <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid var(--brd); padding-bottom:10px;">
@@ -343,7 +341,6 @@
     </div>
 </div>
 
-<!-- KAYDETME MODAL (YENİ) -->
 <div id="modalSave" class="modal">
     <div class="modal-content" style="max-width:350px;">
         <h3 style="margin-top:0;">Hesaplamayı Kaydet</h3>
@@ -422,7 +419,6 @@
             let d = (i===0) ? date : addM(date, i);
             let days = diff(date, d);
             let gt = amt * days;
-            
             html += `<tr>
                 <td style="text-align:center; color:#777; font-weight:bold;">${i+1}</td>
                 <td><input class="tbl-inp money readonly" value="${fmt(amt)}"></td>
@@ -460,7 +456,6 @@
         const badge = idx===0 ? '<span class="pesinat-badge">PEŞİNAT</span>' : '';
         const tr = document.createElement('tr');
         if(idx===0) tr.classList.add('first-row');
-        
         tr.innerHTML = `
             <td style="text-align:center;"><button class="btn-delete" onclick="delRow(this)">✕</button></td>
             <td class="r-num" style="text-align:center; font-weight:bold; color:#555;">${lbl}</td>
@@ -472,13 +467,18 @@
         tbody.appendChild(tr);
     }
 
+    // GÜNCELLENMİŞ SYNCAMT FONKSİYONU
     function syncAmt(el) {
         const tr = el.closest('tr');
         const all = document.querySelectorAll('#tblRight tbody tr');
         let idx = -1; all.forEach((r, i) => { if(r===tr) idx=i; });
-        if(idx === 1) { 
+        
+        // DEĞİŞİKLİK: Peşinat (0) hariç, değiştirilen satırdan sonrasını güncelle
+        if(idx > 0) { 
             let val = el.value;
-            for(let i=2; i<all.length; i++) all[i].querySelector('input[type=number]').value = val;
+            for(let i = idx + 1; i < all.length; i++) {
+                all[i].querySelector('input[type=number]').value = val;
+            }
         }
         calcRight();
     }
@@ -489,7 +489,8 @@
         let idx = -1; all.forEach((r, i) => { if(r===tr) idx=i; });
         let curr = el.value;
         for(let i=idx+1; i<all.length; i++) {
-            let d = new Date(curr); d.setMonth(d.getMonth()+1); d.setDate(1);
+            let d = new Date(curr);
+            d.setMonth(d.getMonth()+1); d.setDate(1);
             let s = d.toISOString().split('T')[0];
             all[i].querySelector('input[type=date]').value = s;
             curr = s;
@@ -573,10 +574,10 @@
         let box = document.getElementById('finalSapma');
         let bar = document.getElementById('riskBar');
         let txt = document.getElementById('riskText');
-        
         if(lAvg===0 && rCiro===0) {
             box.textContent = "0,00"; box.style.background="#bdbdbd";
-            bar.style.width="0%"; txt.textContent="VERİ BEKLENİYOR...";
+            bar.style.width="0%";
+            txt.textContent="VERİ BEKLENİYOR...";
             return;
         }
 
@@ -589,7 +590,8 @@
         else if(sapma<30) { col='#d32f2f'; w='95%'; t="KRİTİK (29 - 30)"; }
         else { col='#8b0000'; w='100%'; t="GİRMEZ (30+)"; }
         
-        box.style.background = col; box.style.color = (col==='#fdd835'?'#333':'#fff');
+        box.style.background = col;
+        box.style.color = (col==='#fdd835'?'#333':'#fff');
         bar.style.background = col; bar.style.width = w;
         txt.textContent = t; txt.style.color = (col==='#fdd835'?'#f9a825':col);
     }
@@ -607,7 +609,6 @@
         
         let existing = document.querySelectorAll('#tblRight tbody tr').length;
         if(existing === 0) return showToast("Kaydedilecek sağ tablo verisi yok.", "error");
-
         // Varsayılan isim öner
         document.getElementById('saveNameInput').value = fmt(parseFloat(ciro)) + " TL Satış";
         document.getElementById('modalSave').style.display = 'block';
@@ -624,7 +625,6 @@
         document.querySelectorAll('#tblRight tbody tr').forEach(r=>{
             rows.push({ t: r.querySelector('input[type=number]').value, d: r.querySelector('input[type=date]').value });
         });
-        
         h.unshift({id:Date.now(), name, ciro, date:new Date().toLocaleDateString(), rows});
         localStorage.setItem('hist', JSON.stringify(h));
         
@@ -708,7 +708,6 @@
             theme: 'grid',
             headStyles: { fillColor: [74, 144, 226] }
         });
-        
         doc.text("Gerceklesen Tablo (Sag)", 14, doc.lastAutoTable.finalY + 10);
         
         doc.autoTable({
@@ -718,7 +717,7 @@
             theme: 'grid',
             headStyles: { fillColor: [102, 187, 106] }
         });
-        
+
         let sapma = document.getElementById('finalSapma').textContent;
         doc.setFontSize(14);
         doc.text(`Sonuc Vade Sapmasi: ${sapma}`, 14, doc.lastAutoTable.finalY + 20);
@@ -748,8 +747,7 @@
                 let pDateInput = rightRows[0].querySelector('input[type=date]');
                 if(pDateInput) {
                     pDateInput.value = newVal;
-                    // Tarihleri senkronize et (Peşinat değişince diğerleri ötelensin mi? Kullanıcı isteğine göre sadece peşinat entegre olsun dendi ama genelde taksitler de kaymalı)
-                    // Burada syncDate fonksiyonunu çağırarak diğerlerini de bu yeni peşinat tarihine göre öteliyoruz.
+                    // Tarihleri senkronize et
                     syncDate(pDateInput);
                 }
             }
