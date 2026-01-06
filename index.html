@@ -357,7 +357,21 @@
     // --- AYARLAR ---
     const USER = "ihlas", PASS = "1234";
     const RULES = { 24000:2, 24500:2, 26000:5, 27000:5, 28000:8, 29000:8, 30000:13, 31000:13, 32000:16, 33000:16, 34000:19, 35000:19, 36000:21, 37500:13, 43500:5, 50500:10, 55000:13, 63000:2, 70000:6, 75000:9, 80000:13, 84000:16 };
-    const K_RULES = { 31000:5, 36000:10 };
+    
+    // GÜNCEL KLİMA APG KURALLARI (Sadece belirtilen yeni baremler işlendi)
+    const K_RULES = { 
+        // 12 BTU Klima Fiyatları ve Oranları
+        31000: 2,   // 1+1
+        35900: 5,   // 1+4
+        43000: 10,  // 1+9
+        48600: 13,  // 1+12
+
+        // 18 BTU Klima Fiyatları ve Oranları
+        42500: 2,   // 1+1
+        49000: 5,   // 1+4
+        58900: 10,  // 1+9
+        66500: 13   // 1+12
+    };
 
     // --- YARDIMCILAR ---
     const fmt = n => n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -366,7 +380,7 @@
     function addM(d,m) { let x=new Date(d); x.setMonth(x.getMonth()+m); if(x.getDate()!==new Date(d).getDate()) x.setDate(0); return x.toISOString().split('T')[0]; }
     function nextMonthFirst(d) { let x=new Date(d); x.setMonth(x.getMonth()+1); x.setDate(1); return x.toISOString().split('T')[0]; }
 
-    // --- TOAST SİSTEMİ (Alert Yerine) ---
+    // --- TOAST SİSTEMİ ---
     function showToast(msg, type='success') {
         const t = document.getElementById("toast");
         t.innerHTML = (type==='error'?'⚠️ ':'✅ ') + msg;
@@ -467,13 +481,10 @@
         tbody.appendChild(tr);
     }
 
-    // GÜNCELLENMİŞ SYNCAMT FONKSİYONU
     function syncAmt(el) {
         const tr = el.closest('tr');
         const all = document.querySelectorAll('#tblRight tbody tr');
         let idx = -1; all.forEach((r, i) => { if(r===tr) idx=i; });
-        
-        // DEĞİŞİKLİK: Peşinat (0) hariç, değiştirilen satırdan sonrasını güncelle
         if(idx > 0) { 
             let val = el.value;
             for(let i = idx + 1; i < all.length; i++) {
@@ -602,14 +613,11 @@
         calcLeft();
     }
 
-    // --- YENİ KAYDETME FONKSİYONLARI (MODAL KULLANIR) ---
     function saveData() {
         let ciro = document.getElementById('targetCiro').value;
         if(!ciro) return showToast("Önce bir Ciro girmelisiniz!", "error");
-        
         let existing = document.querySelectorAll('#tblRight tbody tr').length;
         if(existing === 0) return showToast("Kaydedilecek sağ tablo verisi yok.", "error");
-        // Varsayılan isim öner
         document.getElementById('saveNameInput').value = fmt(parseFloat(ciro)) + " TL Satış";
         document.getElementById('modalSave').style.display = 'block';
     }
@@ -617,17 +625,14 @@
     function confirmSave() {
         let name = document.getElementById('saveNameInput').value;
         if(!name) return showToast("Lütfen bir isim girin.", "error");
-
         let ciro = document.getElementById('targetCiro').value;
         let h = JSON.parse(localStorage.getItem('hist')||"[]");
-        
         let rows = [];
         document.querySelectorAll('#tblRight tbody tr').forEach(r=>{
             rows.push({ t: r.querySelector('input[type=number]').value, d: r.querySelector('input[type=date]').value });
         });
         h.unshift({id:Date.now(), name, ciro, date:new Date().toLocaleDateString(), rows});
         localStorage.setItem('hist', JSON.stringify(h));
-        
         document.getElementById('modalSave').style.display = 'none';
         showToast("Başarıyla Kaydedildi!");
     }
@@ -671,14 +676,11 @@
         showToast("Kayıt silindi.", "error");
     }
 
-    // --- PDF EXPORT ---
     function exportPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
         doc.setFont("helvetica", "bold");
         doc.text("Vade Sapmasi Analiz Raporu", 14, 20);
-        
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
         let info = `Tarih: ${new Date().toLocaleDateString()} | Ciro: ${document.getElementById('targetCiro').value}`;
@@ -709,7 +711,6 @@
             headStyles: { fillColor: [74, 144, 226] }
         });
         doc.text("Gerceklesen Tablo (Sag)", 14, doc.lastAutoTable.finalY + 10);
-        
         doc.autoTable({
             head: [['No', 'Tutar', 'Vade', 'Gun', 'Carpan']],
             body: getTableData('#tblRight', true),
@@ -721,7 +722,6 @@
         let sapma = document.getElementById('finalSapma').textContent;
         doc.setFontSize(14);
         doc.text(`Sonuc Vade Sapmasi: ${sapma}`, 14, doc.lastAutoTable.finalY + 20);
-        
         doc.save('vade-sapmasi-analiz.pdf');
     }
 
@@ -739,7 +739,6 @@
             init();
         }
         document.getElementById('targetCiro').addEventListener('input', calcLeft);
-        // Tarih değiştirildiğinde peşinat tarihini güncelle
         document.getElementById('satisTarihi').addEventListener('change', function() {
             let newVal = this.value;
             let rightRows = document.querySelectorAll('#tblRight tbody tr');
@@ -747,7 +746,6 @@
                 let pDateInput = rightRows[0].querySelector('input[type=date]');
                 if(pDateInput) {
                     pDateInput.value = newVal;
-                    // Tarihleri senkronize et
                     syncDate(pDateInput);
                 }
             }
