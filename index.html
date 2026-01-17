@@ -215,7 +215,7 @@
             table { font-size: 14px; }
             input.tbl-inp { font-size: 14px; padding: 12px 5px; }
 
-            /* MOBIL DÜZENLEME: Kutucukları genişletme */
+            /* MOBIL DÜZENLEME */
             .table-container td input.money { min-width: 120px !important; }
             .table-container td input[type="date"] { min-width: 110px !important; }
         }
@@ -382,7 +382,9 @@
     const prs = s => parseFloat(String(s).replace(/\./g,'').replace(',','.')) || 0;
     const diff = (d1,d2) => (!d1||!d2)?0:Math.ceil((new Date(d2)-new Date(d1))/(864e5));
     function addM(d,m) { let x=new Date(d); x.setMonth(x.getMonth()+m); if(x.getDate()!==new Date(d).getDate()) x.setDate(0); return x.toISOString().split('T')[0]; }
-    function nextMonthFirst(d) { let x=new Date(d); x.setMonth(x.getMonth()+1); x.setDate(1); return x.toISOString().split('T')[0]; }
+    
+    // DUZELTME: Önce günü 1 yap, sonra ayı artır. (31 Ocak -> 1 Şubat yaparken Mart'a atlamasın diye)
+    function nextMonthFirst(d) { let x=new Date(d); x.setDate(1); x.setMonth(x.getMonth()+1); return x.toISOString().split('T')[0]; }
 
     // --- TOAST SİSTEMİ ---
     function showToast(msg, type='success') {
@@ -505,7 +507,10 @@
         let curr = el.value;
         for(let i=idx+1; i<all.length; i++) {
             let d = new Date(curr);
-            d.setMonth(d.getMonth()+1); d.setDate(1);
+            // DUZELTME: Önce gün 1 yapılır, sonra ay artırılır.
+            d.setDate(1); 
+            d.setMonth(d.getMonth()+1); 
+            
             let s = d.toISOString().split('T')[0];
             all[i].querySelector('input[type=date]').value = s;
             curr = s;
