@@ -532,7 +532,20 @@
     }
     
     function delRow(btn) { btn.closest('tr').remove(); renumberRight(); calcRight(); }
-    function clearTable() { document.querySelector('#tblRight tbody').innerHTML=""; calcRight(); }
+    
+    // --- GÜNCELLENMİŞ TEMİZLE FONKSİYONU ---
+    function clearTable() { 
+        // 1. Sağ tabloyu temizle
+        document.querySelector('#tblRight tbody').innerHTML="";
+        
+        // 2. Ciro ve Senet inputlarını temizle
+        document.getElementById('targetCiro').value = "";
+        document.getElementById('senetCount').value = "";
+        
+        // 3. Tabloları yeniden hesapla (sıfırla)
+        calcLeft(); 
+        calcRight(); 
+    }
     
     function renumberRight() {
         document.querySelectorAll('#tblRight tbody tr').forEach((r,i)=>{
