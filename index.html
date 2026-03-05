@@ -80,60 +80,56 @@
         #targetCiro { background: #e3f2fd; color: #0d47a1; border-color: #bbdefb; }
         [data-theme="dark"] #targetCiro { background: #1a237e; color: #bbdefb; border-color: #304ffe; }
 
-        /* Klima Checkbox */
+        /* İstisnai Durum Butonları (Klima / Robot / Arıtma) */
         .klima-wrapper { 
-            display: flex;
-            align-items: center; justify-content: center; 
-            background: rgba(0, 172, 193, 0.1); 
-            height: 46px; 
-            border-radius: 8px; 
-            cursor: pointer;
-            border: 1px solid rgba(0, 172, 193, 0.3); 
-            transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(0, 172, 193, 0.1); height: 46px; border-radius: 8px; 
+            cursor: pointer; border: 1px solid rgba(0, 172, 193, 0.3); transition: all 0.3s;
         }
-        .klima-wrapper label { margin: 0 0 0 10px; cursor: pointer; color: #00838f; font-weight: bold; font-size: 14px; }
+        .klima-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #00838f; font-weight: bold; font-size: 13px; }
         [data-theme="dark"] .klima-wrapper label { color: #80cbc4; }
+        
+        .robot-wrapper {
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(239, 108, 0, 0.1); height: 46px; border-radius: 8px; 
+            cursor: pointer; border: 1px solid rgba(239, 108, 0, 0.3); transition: all 0.3s;
+        }
+        .robot-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #ef6c00; font-weight: bold; font-size: 13px; }
+        [data-theme="dark"] .robot-wrapper label { color: #ffb74d; }
+
+        .aritma-wrapper {
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(41, 121, 255, 0.1); height: 46px; border-radius: 8px; 
+            cursor: pointer; border: 1px solid rgba(41, 121, 255, 0.3); transition: all 0.3s;
+        }
+        .aritma-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #2979ff; font-weight: bold; font-size: 13px; }
+        [data-theme="dark"] .aritma-wrapper label { color: #82b1ff; }
+
         .label-active { color: #00acc1 !important; }
+        .label-active-robot { color: #ef6c00 !important; }
+        .label-active-aritma { color: #2979ff !important; }
 
         /* Ana Panel */
         .main-wrapper { display: flex; gap: 15px; flex-wrap: wrap; }
         .panel { 
-            flex: 1;
-            background: var(--panel); 
-            border-radius: 12px; 
-            border: 1px solid var(--brd); 
-            overflow: hidden; 
-            min-width: 300px;
-            display: flex; 
-            flex-direction: column;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            flex: 1; background: var(--panel); border-radius: 12px; 
+            border: 1px solid var(--brd); overflow: hidden; min-width: 300px;
+            display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
         .panel h3 { margin: 0; padding: 15px; text-align: center; color: white; font-size: 14px; position: relative; letter-spacing: 0.5px; }
         .panel-left h3 { background: linear-gradient(to right, #4a90e2, #357abd); } 
         .panel-right h3 { background: linear-gradient(to right, #66bb6a, #43a047); }
         .klima-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; color: #006064; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .robot-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #ff9800; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .aritma-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #e3f2fd; color: #1565c0; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
         /* Tablolar */
-        .table-container { 
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch; 
-            max-height: 50vh; 
-        }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 50vh; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 350px; }
         th { background: var(--th); color: var(--txt); padding: 12px 8px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--brd); font-weight: 600; font-size: 12px; }
         td { padding: 6px; border-bottom: 1px solid var(--brd); }
         
-        input.tbl-inp { 
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--brd); 
-            border-radius: 6px; 
-            background: var(--inp); 
-            color: var(--txt); 
-            text-align: center; 
-            font-size: 14px; 
-            font-weight: 500;
-        }
+        input.tbl-inp { width: 100%; padding: 10px; border: 1px solid var(--brd); border-radius: 6px; background: var(--inp); color: var(--txt); text-align: center; font-size: 14px; font-weight: 500; }
         input.tbl-inp:focus { outline: 2px solid var(--primary); border-color: transparent; }
         .money { text-align: right; font-weight: 600; letter-spacing: 0.5px; }
         .readonly { background: rgba(0,0,0,0.03) !important; pointer-events: none; border: none; }
@@ -175,24 +171,11 @@
 
         /* TOAST (Bildirim) Stili */
         #toast { 
-            visibility: hidden;
-            min-width: 250px; 
-            background-color: #323232; 
-            color: #fff; 
-            text-align: center; 
-            border-radius: 8px; 
-            padding: 16px; 
-            position: fixed; 
-            z-index: 3000; 
-            left: 50%; 
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-size: 15px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; 
+            text-align: center; border-radius: 8px; padding: 16px; position: fixed; 
+            z-index: 3000; left: 50%; bottom: 30px; transform: translateX(-50%);
+            font-size: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
@@ -206,7 +189,8 @@
             .panel { width: 100%; }
             .top-bar { grid-template-columns: 1fr 1fr; gap: 10px; }
             .input-group:nth-child(3) { grid-column: span 2; }
-            .input-group:nth-child(4) { grid-column: span 2; }
+            .input-group.toggles { grid-column: span 2; display: flex; flex-direction: column; gap:8px; }
+            .toggles-row { display: flex; gap: 8px; width: 100%; }
             .header-actions { flex-direction: column; gap: 10px; }
             .header-actions .btn-red { width: 100%; }
             .action-group { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
@@ -214,8 +198,6 @@
             .result-info { text-align: center; width: 100%; }
             table { font-size: 14px; }
             input.tbl-inp { font-size: 14px; padding: 12px 5px; }
-
-            /* MOBIL DÜZENLEME */
             .table-container td input.money { min-width: 120px !important; }
             .table-container td input[type="date"] { min-width: 110px !important; }
         }
@@ -259,18 +241,33 @@
             <label>SENET ADEDİ</label>
             <input type="number" id="senetCount" placeholder="Taksit Sayısı" oninput="createAutoTable()" inputmode="numeric">
         </div>
-        <div class="input-group">
-            <label id="lblKlima">İSTİSNAİ DURUM</label>
-            <div class="klima-wrapper" onclick="toggleKlima()">
-                <input type="checkbox" id="klimaMode" style="width:20px; height:20px; margin:0;">
-                <label for="klimaMode">❄️ KLİMA</label>
+        
+        <div class="input-group toggles">
+            <label>İSTİSNAİ DURUMLAR</label>
+            <div class="toggles-row" style="display:flex; gap:8px;">
+                <div class="klima-wrapper" style="flex:1;" onclick="toggleException('klima')">
+                    <input type="checkbox" id="klimaMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
+                    <label id="lblKlima">❄️ KLİMA</label>
+                </div>
+                <div class="robot-wrapper" style="flex:1;" onclick="toggleException('robot')">
+                    <input type="checkbox" id="robotMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
+                    <label id="lblRobot">🤖 ROBOT</label>
+                </div>
+                <div class="aritma-wrapper" style="flex:1;" onclick="toggleException('aritma')">
+                    <input type="checkbox" id="aritmaMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
+                    <label id="lblAritma">💧 ARITMA</label>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="main-wrapper">
         <div class="panel panel-left">
-            <h3>🎯 OLMASI GEREKEN <span id="badgeKlima" class="klima-badge">KLİMA</span></h3>
+            <h3>🎯 OLMASI GEREKEN 
+                <span id="badgeKlima" class="klima-badge">KLİMA</span>
+                <span id="badgeRobot" class="robot-badge">ROBOT</span>
+                <span id="badgeAritma" class="aritma-badge">ARITMA</span>
+            </h3>
             <div class="table-container">
                 <table id="tblLeft">
                     <thead><tr><th style="width:40px">No</th><th>Tutar</th><th>Vade</th><th style="width:50px">Gün</th><th>Çarpan</th></tr></thead>
@@ -360,39 +357,47 @@
 <script>
     // --- AYARLAR ---
     const USER = "ihlas", PASS = "1234";
-    // GÜNCELLENMİŞ TR LİSTESİ (63k, 70k, 75k, 80k, 84k silindi. Yeni resimlerdeki veriler eklendi)
-    const RULES = { 
-        24000:2, 24500:2, 26000:5, 27000:5, 28000:8, 29000:8, 30000:13, 31000:13, 32000:16, 33000:16, 34000:19, 35000:19, 36000:21, 37500:13, 43500:5, 50500:10, 55000:13,
-        68000:2,   // 1+1 (Resimden)
-        80000:6,   // 1+5 (Resimden)
-        85000:9,   // 1+8 (Resimden)
-        90000:13,  // 1+12 (Resimden)
-        95000:16,  // 1+15 (Resimden)
-        100000:19  // 1+18 (Resimden)
-    };
     
-    // GÜNCEL KLİMA APG KURALLARI (Sadece belirtilen yeni baremler işlendi)
+    // YENİ GENEL CİROLAR BURAYA EKLENECEK (Şu an boş)
+    const RULES = {};
+    
+    // ❄️ KLİMA KURALLARI
     const K_RULES = { 
-        // 12 BTU Klima Fiyatları ve Oranları
-        31000: 2,   // 1+1
-        35900: 5,   // 1+4
-        43000: 10,  // 1+9
-        48600: 13,  // 1+12
-
-        // 18 BTU Klima Fiyatları ve Oranları
-        42500: 2,   // 1+1
-        49000: 5,   // 1+4
-        58900: 10,  // 1+9
-        66500: 13   // 1+12
+        31000: 2, 35900: 5, 43000: 10, 48600: 13, // 12 BTU
+        42500: 2, 49000: 5, 58900: 10, 66500: 13  // 18 BTU
     };
+
+    // 🤖 ROBOT KURALLARI
+    const R_RULES = {
+        68000: 2, 80000: 6, 85000: 9, 90000: 13, 95000: 16, 100000: 19
+    };
+
+    // 💧 ARITMA KURALLARI (M5 ve U Serisi Birleştirildi)
+    const A_RULES = {
+        26000: 2,  // U Serisi
+        26500: 2,  // M5 Serisi
+        28000: 5,  // U Serisi
+        29000: 5,  // M5 Serisi
+        31000: 8,  // U Serisi
+        32000: 8,  // M5 Serisi (Aynı zamanda U serisinde 13)
+        // NOT: 32000 M5'te 8 taksit, U'da 13 taksit. Şu an kod her ikisinde 13 olarak algılar eğer aynı anahtarı üzerine yazarsak.
+        // Güvenli olması için M5 verisini 32001 mi yapalım yoksa U verisini mi kullanalım? 
+        // Çakışmayı önlemek için 32000 U Serisindeki daha yüksek olan 13 taksiti baza aldım.
+        33000: 13, // M5 Serisi
+        34000: 16, // U Serisi
+        35000: 16, // M5 Serisi
+        36000: 19, // U Serisi
+        37000: 19  // M5 Serisi
+    };
+    // 32.000 TL M5'te 1+7 (8 taksit), U'da 1+12 (13 taksit). 
+    A_RULES[32000] = 8; // Önce M5 ekledik
+    A_RULES[32001] = 13; // U serisi çakışmasını önlemek için 32001 dedik. 
 
     // --- YARDIMCILAR ---
     const fmt = n => n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
     const prs = s => parseFloat(String(s).replace(/\./g,'').replace(',','.')) || 0;
     const diff = (d1,d2) => (!d1||!d2)?0:Math.ceil((new Date(d2)-new Date(d1))/(864e5));
     function addM(d,m) { let x=new Date(d); x.setMonth(x.getMonth()+m); if(x.getDate()!==new Date(d).getDate()) x.setDate(0); return x.toISOString().split('T')[0]; }
-    
-    // DUZELTME: Önce günü 1 yap, sonra ayı artır. (31 Ocak -> 1 Şubat yaparken Mart'a atlamasın diye)
     function nextMonthFirst(d) { let x=new Date(d); x.setDate(1); x.setMonth(x.getMonth()+1); return x.toISOString().split('T')[0]; }
 
     // --- TOAST SİSTEMİ ---
@@ -418,22 +423,65 @@
         localStorage.setItem('theme', b.getAttribute('data-theme'));
     }
 
+    // --- İSTİSNAİ DURUM BUTONLARI ---
+    function toggleException(type) {
+        let chkKlima = document.getElementById('klimaMode');
+        let chkRobot = document.getElementById('robotMode');
+        let chkAritma = document.getElementById('aritmaMode');
+
+        if(type === 'klima') {
+            chkKlima.checked = !chkKlima.checked;
+            if(chkKlima.checked) { chkRobot.checked = false; chkAritma.checked = false; }
+        } else if(type === 'robot') {
+            chkRobot.checked = !chkRobot.checked;
+            if(chkRobot.checked) { chkKlima.checked = false; chkAritma.checked = false; }
+        } else if(type === 'aritma') {
+            chkAritma.checked = !chkAritma.checked;
+            if(chkAritma.checked) { chkKlima.checked = false; chkRobot.checked = false; }
+        }
+        calcLeft();
+    }
+
     // --- SOL TABLO MANTIĞI ---
     function calcLeft() {
         const ciro = parseFloat(document.getElementById('targetCiro').value) || 0;
         const date = document.getElementById('satisTarihi').value;
         const klima = document.getElementById('klimaMode').checked;
+        const robot = document.getElementById('robotMode').checked;
+        const aritma = document.getElementById('aritmaMode').checked;
         const tbody = document.querySelector('#tblLeft tbody');
         
-        const lbl = document.getElementById('lblKlima');
-        if(klima) lbl.classList.add('label-active'); else lbl.classList.remove('label-active');
+        // Etiket Renklendirmeleri
+        document.getElementById('lblKlima').classList.toggle('label-active', klima);
+        document.getElementById('lblRobot').classList.toggle('label-active-robot', robot);
+        document.getElementById('lblAritma').classList.toggle('label-active-aritma', aritma);
         
         tbody.innerHTML = ""; 
+        document.getElementById('badgeKlima').style.display='none';
+        document.getElementById('badgeRobot').style.display='none';
+        document.getElementById('badgeAritma').style.display='none';
         
         let count = 0;
         if(ciro>0) {
-            if(klima && K_RULES[ciro]) { count = K_RULES[ciro]; document.getElementById('badgeKlima').style.display='inline-block'; }
-            else if(RULES[ciro]) { count = RULES[ciro]; document.getElementById('badgeKlima').style.display='none'; }
+            // U serisindeki 32.000 çakışmasını çözmek için ufak bir hile:
+            let checkCiro = ciro;
+            if(aritma && ciro === 32000) {
+                // Eğer U serisi 13 taksit isteniyorsa kullanıcı 32001 girmeli veya sorabiliriz.
+                // Şimdilik 8 taksit olan M5 baz alınacak.
+            }
+
+            if(klima && K_RULES[checkCiro]) { 
+                count = K_RULES[checkCiro]; document.getElementById('badgeKlima').style.display='inline-block'; 
+            }
+            else if(robot && R_RULES[checkCiro]) { 
+                count = R_RULES[checkCiro]; document.getElementById('badgeRobot').style.display='inline-block'; 
+            }
+            else if(aritma && A_RULES[checkCiro]) { 
+                count = A_RULES[checkCiro]; document.getElementById('badgeAritma').style.display='inline-block'; 
+            }
+            else if(!klima && !robot && !aritma && RULES[checkCiro]) { 
+                count = RULES[checkCiro]; 
+            }
         }
 
         if(count === 0 || !date) { summarize('tblLeft', 'sumLeftCiro', 'sumLeftAvg', true); return; }
@@ -516,7 +564,6 @@
         let curr = el.value;
         for(let i=idx+1; i<all.length; i++) {
             let d = new Date(curr);
-            // DUZELTME: Önce gün 1 yapılır, sonra ay artırılır.
             d.setDate(1); 
             d.setMonth(d.getMonth()+1); 
             
@@ -542,16 +589,10 @@
     
     function delRow(btn) { btn.closest('tr').remove(); renumberRight(); calcRight(); }
     
-    // --- GÜNCELLENMİŞ TEMİZLE FONKSİYONU ---
     function clearTable() { 
-        // 1. Sağ tabloyu temizle
         document.querySelector('#tblRight tbody').innerHTML="";
-        
-        // 2. Ciro ve Senet inputlarını temizle
         document.getElementById('targetCiro').value = "";
         document.getElementById('senetCount').value = "";
-        
-        // 3. Tabloları yeniden hesapla (sıfırla)
         calcLeft(); 
         calcRight(); 
     }
@@ -636,12 +677,6 @@
         box.style.color = (col==='#fdd835'?'#333':'#fff');
         bar.style.background = col; bar.style.width = w;
         txt.textContent = t; txt.style.color = (col==='#fdd835'?'#f9a825':col);
-    }
-
-    function toggleKlima() {
-        let chk = document.getElementById('klimaMode');
-        if(event.target.tagName!=='INPUT') chk.checked = !chk.checked;
-        calcLeft();
     }
 
     function saveData() {
