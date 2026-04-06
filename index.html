@@ -369,7 +369,7 @@
 
     // 🤖 ROBOT KURALLARI
     const R_RULES = {
-        68000: 2, 80000: 6, 85000: 9, 90000: 13, 95000: 16, 100000: 19
+        70000: 2, 80000: 6, 85000: 9, 90000: 13, 95000: 16, 100000: 19
     };
 
     // 💧 ARITMA KURALLARI (M5 ve U Serisi Birleştirildi)
@@ -820,5 +820,20 @@
         });
     }
 </script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('Service Worker başarıyla kaydedildi:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Service Worker kaydı başarısız oldu:', error);
+                });
+        });
+    }
+</script>
+
 </body>
 </html>
