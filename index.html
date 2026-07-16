@@ -127,6 +127,76 @@
         .label-active-robot { color: #ef6c00 !important; }
         .label-active-aritma { color: #2979ff !important; }
 
+        /* Cihaz seçim kartları */
+        .input-group.toggles { grid-column: 1 / -1; }
+        .toggles-row {
+            display: grid !important;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px !important;
+            width: 100%;
+        }
+        .klima-wrapper { --option-color: #00838f; }
+        .klima-wifi-wrapper { --option-color: #00796b; }
+        .diamond-wrapper { --option-color: #7b1fa2; }
+        .robot-wrapper { --option-color: #ef6c00; }
+        .aritma-wrapper { --option-color: #2979ff; }
+        .exception-option {
+            min-width: 0;
+            height: 64px !important;
+            padding: 10px 12px;
+            justify-content: flex-start !important;
+            gap: 10px;
+            border-radius: 12px !important;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        .exception-option:hover { transform: translateY(-1px); }
+        .exception-option:focus-visible { outline: 3px solid rgba(74, 144, 226, 0.3); outline-offset: 2px; }
+        .exception-option::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            background: var(--option-color);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .exception-option.option-active {
+            border-color: var(--option-color) !important;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+        .exception-option.option-active::after { opacity: 1; }
+        .exception-icon { flex: 0 0 auto; font-size: 21px; line-height: 1; }
+        .exception-label {
+            flex: 1;
+            min-width: 0;
+            margin: 0 !important;
+            text-align: left;
+            font-size: 13px !important;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .exception-check {
+            appearance: none;
+            -webkit-appearance: none;
+            flex: 0 0 auto;
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            border: 2px solid var(--option-color);
+            border-radius: 50%;
+            background: var(--panel);
+            pointer-events: none;
+        }
+        .exception-check:checked {
+            background: var(--option-color);
+            box-shadow: inset 0 0 0 4px var(--panel);
+        }
+
         /* Ana Panel */
         .main-wrapper { display: flex; gap: 15px; flex-wrap: wrap; }
         .panel { 
@@ -209,8 +279,10 @@
             .top-bar { grid-template-columns: 1fr 1fr; gap: 10px; }
             .input-group:nth-child(3) { grid-column: span 2; }
             .input-group.toggles { grid-column: span 2; display: flex; flex-direction: column; gap:8px; }
-            .toggles-row { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
-            .toggles-row > div { min-width: 100px; }
+            .toggles-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px !important; }
+            .toggles-row > div { min-width: 0; }
+            .toggles-row > div:last-child { grid-column: 1 / -1; }
+            .exception-option { height: 58px !important; padding: 8px 10px; }
             .header-actions { flex-direction: column; gap: 10px; }
             .header-actions .btn-red { width: 100%; }
             .action-group { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
@@ -265,25 +337,30 @@
         <div class="input-group toggles">
             <label>İSTİSNAİ DURUMLAR</label>
             <div class="toggles-row" style="display:flex; gap:8px;">
-                <div class="klima-wrapper" style="flex:1;" onclick="toggleException('klima')">
-                    <input type="checkbox" id="klimaMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
-                    <label id="lblKlima">❄️ KLİMA DÜZ</label>
+                <div class="klima-wrapper exception-option" onclick="toggleException('klima')" onkeydown="handleExceptionKey(event, 'klima')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">❄️</span>
+                    <span id="lblKlima" class="exception-label">Klima Düz</span>
+                    <input type="checkbox" id="klimaMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
-                <div class="klima-wifi-wrapper" style="flex:1;" onclick="toggleException('klimaWifi')">
-                    <input type="checkbox" id="klimaWifiMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
-                    <label id="lblKlimaWifi">📶 KLİMA WI-FI</label>
+                <div class="klima-wifi-wrapper exception-option" onclick="toggleException('klimaWifi')" onkeydown="handleExceptionKey(event, 'klimaWifi')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">📶</span>
+                    <span id="lblKlimaWifi" class="exception-label">Klima Wi-Fi</span>
+                    <input type="checkbox" id="klimaWifiMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
-                <div class="diamond-wrapper" style="flex:1;" onclick="toggleException('diamond')">
-                    <input type="checkbox" id="diamondMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
-                    <label id="lblDiamond">💎 DIAMOND</label>
+                <div class="diamond-wrapper exception-option" onclick="toggleException('diamond')" onkeydown="handleExceptionKey(event, 'diamond')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">💎</span>
+                    <span id="lblDiamond" class="exception-label">Diamond</span>
+                    <input type="checkbox" id="diamondMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
-                <div class="robot-wrapper" style="flex:1;" onclick="toggleException('robot')">
-                    <input type="checkbox" id="robotMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
-                    <label id="lblRobot">🤖 ROBOT</label>
+                <div class="robot-wrapper exception-option" onclick="toggleException('robot')" onkeydown="handleExceptionKey(event, 'robot')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">🤖</span>
+                    <span id="lblRobot" class="exception-label">Robot</span>
+                    <input type="checkbox" id="robotMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
-                <div class="aritma-wrapper" style="flex:1;" onclick="toggleException('aritma')">
-                    <input type="checkbox" id="aritmaMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
-                    <label id="lblAritma">💧 ARITMA</label>
+                <div class="aritma-wrapper exception-option" onclick="toggleException('aritma')" onkeydown="handleExceptionKey(event, 'aritma')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">💧</span>
+                    <span id="lblAritma" class="exception-label">Arıtma</span>
+                    <input type="checkbox" id="aritmaMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
             </div>
         </div>
@@ -466,6 +543,13 @@
     }
 
     // --- İSTİSNAİ DURUM BUTONLARI ---
+    function handleExceptionKey(event, type) {
+        if(event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleException(type);
+        }
+    }
+
     function toggleException(type) {
         let chkKlima = document.getElementById('klimaMode');
         let chkKlimaWifi = document.getElementById('klimaWifiMode');
@@ -509,6 +593,18 @@
         document.getElementById('lblDiamond').classList.toggle('label-active-diamond', diamond);
         document.getElementById('lblRobot').classList.toggle('label-active-robot', robot);
         document.getElementById('lblAritma').classList.toggle('label-active-aritma', aritma);
+
+        [
+            ['.klima-wrapper', klima],
+            ['.klima-wifi-wrapper', klimaWifi],
+            ['.diamond-wrapper', diamond],
+            ['.robot-wrapper', robot],
+            ['.aritma-wrapper', aritma]
+        ].forEach(([selector, active]) => {
+            const option = document.querySelector(selector);
+            option.classList.toggle('option-active', active);
+            option.setAttribute('aria-pressed', String(active));
+        });
         
         tbody.innerHTML = ""; 
         document.getElementById('badgeKlima').style.display='none';
