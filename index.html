@@ -88,6 +88,14 @@
         }
         .klima-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #00838f; font-weight: bold; font-size: 13px; }
         [data-theme="dark"] .klima-wrapper label { color: #80cbc4; }
+
+        .klima-wifi-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0, 121, 107, 0.1); height: 46px; border-radius: 8px;
+            cursor: pointer; border: 1px solid rgba(0, 121, 107, 0.35); transition: all 0.3s;
+        }
+        .klima-wifi-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #00796b; font-weight: bold; font-size: 13px; }
+        [data-theme="dark"] .klima-wifi-wrapper label { color: #80cbc4; }
         
         .robot-wrapper {
             display: flex; align-items: center; justify-content: center; 
@@ -106,6 +114,7 @@
         [data-theme="dark"] .aritma-wrapper label { color: #82b1ff; }
 
         .label-active { color: #00acc1 !important; }
+        .label-active-wifi { color: #00796b !important; }
         .label-active-robot { color: #ef6c00 !important; }
         .label-active-aritma { color: #2979ff !important; }
 
@@ -247,7 +256,11 @@
             <div class="toggles-row" style="display:flex; gap:8px;">
                 <div class="klima-wrapper" style="flex:1;" onclick="toggleException('klima')">
                     <input type="checkbox" id="klimaMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
-                    <label id="lblKlima">❄️ KLİMA</label>
+                    <label id="lblKlima">❄️ KLİMA DÜZ</label>
+                </div>
+                <div class="klima-wifi-wrapper" style="flex:1;" onclick="toggleException('klimaWifi')">
+                    <input type="checkbox" id="klimaWifiMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
+                    <label id="lblKlimaWifi">📶 KLİMA WI-FI</label>
                 </div>
                 <div class="robot-wrapper" style="flex:1;" onclick="toggleException('robot')">
                     <input type="checkbox" id="robotMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
@@ -264,7 +277,8 @@
     <div class="main-wrapper">
         <div class="panel panel-left">
             <h3>🎯 OLMASI GEREKEN 
-                <span id="badgeKlima" class="klima-badge">KLİMA</span>
+                <span id="badgeKlima" class="klima-badge">KLİMA DÜZ</span>
+                <span id="badgeKlimaWifi" class="klima-badge">KLİMA WI-FI</span>
                 <span id="badgeRobot" class="robot-badge">ROBOT</span>
                 <span id="badgeAritma" class="aritma-badge">ARITMA</span>
             </h3>
@@ -367,6 +381,11 @@
         42500: 2, 49000: 5, 58900: 10, 66500: 13  // 18 BTU
     };
 
+    // 📶 18 BTU WI-FI KLİMA KURALLARI
+    const K_WIFI_RULES = {
+        44200: 2, 51000: 5, 61200: 10, 69200: 13
+    };
+
     // 🤖 ROBOT KURALLARI
     const R_RULES = {
         75000: 2, 85000: 6, 90000: 9, 95000: 13, 100000: 16, 105000: 19
@@ -426,18 +445,22 @@
     // --- İSTİSNAİ DURUM BUTONLARI ---
     function toggleException(type) {
         let chkKlima = document.getElementById('klimaMode');
+        let chkKlimaWifi = document.getElementById('klimaWifiMode');
         let chkRobot = document.getElementById('robotMode');
         let chkAritma = document.getElementById('aritmaMode');
 
         if(type === 'klima') {
             chkKlima.checked = !chkKlima.checked;
-            if(chkKlima.checked) { chkRobot.checked = false; chkAritma.checked = false; }
+            if(chkKlima.checked) { chkKlimaWifi.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
+        } else if(type === 'klimaWifi') {
+            chkKlimaWifi.checked = !chkKlimaWifi.checked;
+            if(chkKlimaWifi.checked) { chkKlima.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
         } else if(type === 'robot') {
             chkRobot.checked = !chkRobot.checked;
-            if(chkRobot.checked) { chkKlima.checked = false; chkAritma.checked = false; }
+            if(chkRobot.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkAritma.checked = false; }
         } else if(type === 'aritma') {
             chkAritma.checked = !chkAritma.checked;
-            if(chkAritma.checked) { chkKlima.checked = false; chkRobot.checked = false; }
+            if(chkAritma.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkRobot.checked = false; }
         }
         calcLeft();
     }
@@ -447,17 +470,20 @@
         const ciro = parseFloat(document.getElementById('targetCiro').value) || 0;
         const date = document.getElementById('satisTarihi').value;
         const klima = document.getElementById('klimaMode').checked;
+        const klimaWifi = document.getElementById('klimaWifiMode').checked;
         const robot = document.getElementById('robotMode').checked;
         const aritma = document.getElementById('aritmaMode').checked;
         const tbody = document.querySelector('#tblLeft tbody');
         
         // Etiket Renklendirmeleri
         document.getElementById('lblKlima').classList.toggle('label-active', klima);
+        document.getElementById('lblKlimaWifi').classList.toggle('label-active-wifi', klimaWifi);
         document.getElementById('lblRobot').classList.toggle('label-active-robot', robot);
         document.getElementById('lblAritma').classList.toggle('label-active-aritma', aritma);
         
         tbody.innerHTML = ""; 
         document.getElementById('badgeKlima').style.display='none';
+        document.getElementById('badgeKlimaWifi').style.display='none';
         document.getElementById('badgeRobot').style.display='none';
         document.getElementById('badgeAritma').style.display='none';
         
@@ -473,13 +499,16 @@
             if(klima && K_RULES[checkCiro]) { 
                 count = K_RULES[checkCiro]; document.getElementById('badgeKlima').style.display='inline-block'; 
             }
+            else if(klimaWifi && K_WIFI_RULES[checkCiro]) {
+                count = K_WIFI_RULES[checkCiro]; document.getElementById('badgeKlimaWifi').style.display='inline-block';
+            }
             else if(robot && R_RULES[checkCiro]) { 
                 count = R_RULES[checkCiro]; document.getElementById('badgeRobot').style.display='inline-block'; 
             }
             else if(aritma && A_RULES[checkCiro]) { 
                 count = A_RULES[checkCiro]; document.getElementById('badgeAritma').style.display='inline-block'; 
             }
-            else if(!klima && !robot && !aritma && RULES[checkCiro]) { 
+            else if(!klima && !klimaWifi && !robot && !aritma && RULES[checkCiro]) {
                 count = RULES[checkCiro]; 
             }
         }
