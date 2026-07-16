@@ -96,6 +96,14 @@
         }
         .klima-wifi-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #00796b; font-weight: bold; font-size: 13px; }
         [data-theme="dark"] .klima-wifi-wrapper label { color: #80cbc4; }
+
+        .diamond-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(123, 31, 162, 0.1); height: 46px; border-radius: 8px;
+            cursor: pointer; border: 1px solid rgba(123, 31, 162, 0.35); transition: all 0.3s;
+        }
+        .diamond-wrapper label { margin: 0 0 0 8px; cursor: pointer; color: #7b1fa2; font-weight: bold; font-size: 13px; }
+        [data-theme="dark"] .diamond-wrapper label { color: #ce93d8; }
         
         .robot-wrapper {
             display: flex; align-items: center; justify-content: center; 
@@ -115,6 +123,7 @@
 
         .label-active { color: #00acc1 !important; }
         .label-active-wifi { color: #00796b !important; }
+        .label-active-diamond { color: #7b1fa2 !important; }
         .label-active-robot { color: #ef6c00 !important; }
         .label-active-aritma { color: #2979ff !important; }
 
@@ -131,6 +140,7 @@
         .klima-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: white; color: #006064; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .robot-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #ff9800; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .aritma-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #e3f2fd; color: #1565c0; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .diamond-badge { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #7b1fa2; color: white; padding: 3px 8px; border-radius: 4px; font-size: 10px; display: none; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
         /* Tablolar */
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; max-height: 50vh; }
@@ -199,7 +209,8 @@
             .top-bar { grid-template-columns: 1fr 1fr; gap: 10px; }
             .input-group:nth-child(3) { grid-column: span 2; }
             .input-group.toggles { grid-column: span 2; display: flex; flex-direction: column; gap:8px; }
-            .toggles-row { display: flex; gap: 8px; width: 100%; }
+            .toggles-row { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+            .toggles-row > div { min-width: 100px; }
             .header-actions { flex-direction: column; gap: 10px; }
             .header-actions .btn-red { width: 100%; }
             .action-group { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
@@ -262,6 +273,10 @@
                     <input type="checkbox" id="klimaWifiMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
                     <label id="lblKlimaWifi">📶 KLİMA WI-FI</label>
                 </div>
+                <div class="diamond-wrapper" style="flex:1;" onclick="toggleException('diamond')">
+                    <input type="checkbox" id="diamondMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
+                    <label id="lblDiamond">💎 DIAMOND</label>
+                </div>
                 <div class="robot-wrapper" style="flex:1;" onclick="toggleException('robot')">
                     <input type="checkbox" id="robotMode" style="width:16px; height:16px; margin:0; pointer-events:none;">
                     <label id="lblRobot">🤖 ROBOT</label>
@@ -279,6 +294,7 @@
             <h3>🎯 OLMASI GEREKEN 
                 <span id="badgeKlima" class="klima-badge">KLİMA DÜZ</span>
                 <span id="badgeKlimaWifi" class="klima-badge">KLİMA WI-FI</span>
+                <span id="badgeDiamond" class="diamond-badge">DIAMOND</span>
                 <span id="badgeRobot" class="robot-badge">ROBOT</span>
                 <span id="badgeAritma" class="aritma-badge">ARITMA</span>
             </h3>
@@ -387,6 +403,12 @@
         44200: 2, 51000: 5, 61200: 10, 69200: 13
     };
 
+    // 💎 DIAMOND KURALLARI
+    const D_RULES = {
+        30000: 2, 34000: 5, 36000: 8, 38000: 13,
+        40000: 16, 44000: 19, 48000: 22
+    };
+
     // 🤖 ROBOT KURALLARI
     const R_RULES = {
         75000: 2, 85000: 6, 90000: 9, 95000: 13, 100000: 16, 105000: 19
@@ -447,21 +469,25 @@
     function toggleException(type) {
         let chkKlima = document.getElementById('klimaMode');
         let chkKlimaWifi = document.getElementById('klimaWifiMode');
+        let chkDiamond = document.getElementById('diamondMode');
         let chkRobot = document.getElementById('robotMode');
         let chkAritma = document.getElementById('aritmaMode');
 
         if(type === 'klima') {
             chkKlima.checked = !chkKlima.checked;
-            if(chkKlima.checked) { chkKlimaWifi.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
+            if(chkKlima.checked) { chkKlimaWifi.checked = false; chkDiamond.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
         } else if(type === 'klimaWifi') {
             chkKlimaWifi.checked = !chkKlimaWifi.checked;
-            if(chkKlimaWifi.checked) { chkKlima.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
+            if(chkKlimaWifi.checked) { chkKlima.checked = false; chkDiamond.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
+        } else if(type === 'diamond') {
+            chkDiamond.checked = !chkDiamond.checked;
+            if(chkDiamond.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
         } else if(type === 'robot') {
             chkRobot.checked = !chkRobot.checked;
-            if(chkRobot.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkAritma.checked = false; }
+            if(chkRobot.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkDiamond.checked = false; chkAritma.checked = false; }
         } else if(type === 'aritma') {
             chkAritma.checked = !chkAritma.checked;
-            if(chkAritma.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkRobot.checked = false; }
+            if(chkAritma.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkDiamond.checked = false; chkRobot.checked = false; }
         }
         calcLeft();
     }
@@ -472,6 +498,7 @@
         const date = document.getElementById('satisTarihi').value;
         const klima = document.getElementById('klimaMode').checked;
         const klimaWifi = document.getElementById('klimaWifiMode').checked;
+        const diamond = document.getElementById('diamondMode').checked;
         const robot = document.getElementById('robotMode').checked;
         const aritma = document.getElementById('aritmaMode').checked;
         const tbody = document.querySelector('#tblLeft tbody');
@@ -479,12 +506,14 @@
         // Etiket Renklendirmeleri
         document.getElementById('lblKlima').classList.toggle('label-active', klima);
         document.getElementById('lblKlimaWifi').classList.toggle('label-active-wifi', klimaWifi);
+        document.getElementById('lblDiamond').classList.toggle('label-active-diamond', diamond);
         document.getElementById('lblRobot').classList.toggle('label-active-robot', robot);
         document.getElementById('lblAritma').classList.toggle('label-active-aritma', aritma);
         
         tbody.innerHTML = ""; 
         document.getElementById('badgeKlima').style.display='none';
         document.getElementById('badgeKlimaWifi').style.display='none';
+        document.getElementById('badgeDiamond').style.display='none';
         document.getElementById('badgeRobot').style.display='none';
         document.getElementById('badgeAritma').style.display='none';
         
@@ -503,13 +532,16 @@
             else if(klimaWifi && K_WIFI_RULES[checkCiro]) {
                 count = K_WIFI_RULES[checkCiro]; document.getElementById('badgeKlimaWifi').style.display='inline-block';
             }
+            else if(diamond && D_RULES[checkCiro]) {
+                count = D_RULES[checkCiro]; document.getElementById('badgeDiamond').style.display='inline-block';
+            }
             else if(robot && R_RULES[checkCiro]) { 
                 count = R_RULES[checkCiro]; document.getElementById('badgeRobot').style.display='inline-block'; 
             }
             else if(aritma && A_RULES[checkCiro]) { 
                 count = A_RULES[checkCiro]; document.getElementById('badgeAritma').style.display='inline-block'; 
             }
-            else if(!klima && !klimaWifi && !robot && !aritma && RULES[checkCiro]) {
+            else if(!klima && !klimaWifi && !diamond && !robot && !aritma && RULES[checkCiro]) {
                 count = RULES[checkCiro]; 
             }
         }
