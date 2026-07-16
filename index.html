@@ -180,19 +180,21 @@
             line-height: 1.2;
             white-space: nowrap;
         }
-        .exception-check {
+        .top-bar input.exception-check {
             appearance: none;
             -webkit-appearance: none;
             flex: 0 0 auto;
             width: 18px;
             height: 18px;
             margin: 0;
+            padding: 0;
             border: 2px solid var(--option-color);
             border-radius: 50%;
             background: var(--panel);
+            text-align: initial;
             pointer-events: none;
         }
-        .exception-check:checked {
+        .top-bar input.exception-check:checked {
             background: var(--option-color);
             box-shadow: inset 0 0 0 4px var(--panel);
         }
