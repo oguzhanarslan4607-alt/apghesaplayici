@@ -1,5 +1,5 @@
 // Önbellek sürümü. Kodlarda güncelleme yaptığında bu v3'ü v4, v5 olarak değiştirirsen herkesin cihazında zorla güncellenir.
-const CACHE_NAME = 'vade-sapma-v3'; 
+const CACHE_NAME = 'vade-sapma-v4';
 
 const urlsToCache = [
   './',
