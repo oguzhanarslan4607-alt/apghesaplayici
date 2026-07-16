@@ -339,6 +339,16 @@
         <div class="input-group toggles">
             <label>İSTİSNAİ DURUMLAR</label>
             <div class="toggles-row" style="display:flex; gap:8px;">
+                <div class="robot-wrapper exception-option" onclick="toggleException('robot')" onkeydown="handleExceptionKey(event, 'robot')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">🤖</span>
+                    <span id="lblRobot" class="exception-label">Robot</span>
+                    <input type="checkbox" id="robotMode" class="exception-check" tabindex="-1" aria-hidden="true">
+                </div>
+                <div class="aritma-wrapper exception-option" onclick="toggleException('aritma')" onkeydown="handleExceptionKey(event, 'aritma')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">💧</span>
+                    <span id="lblAritma" class="exception-label">Arıtma</span>
+                    <input type="checkbox" id="aritmaMode" class="exception-check" tabindex="-1" aria-hidden="true">
+                </div>
                 <div class="klima-wrapper exception-option" onclick="toggleException('klima')" onkeydown="handleExceptionKey(event, 'klima')" role="button" tabindex="0" aria-pressed="false">
                     <span class="exception-icon" aria-hidden="true">❄️</span>
                     <span id="lblKlima" class="exception-label">Klima Düz</span>
@@ -353,16 +363,6 @@
                     <span class="exception-icon" aria-hidden="true">💎</span>
                     <span id="lblDiamond" class="exception-label">Diamond</span>
                     <input type="checkbox" id="diamondMode" class="exception-check" tabindex="-1" aria-hidden="true">
-                </div>
-                <div class="robot-wrapper exception-option" onclick="toggleException('robot')" onkeydown="handleExceptionKey(event, 'robot')" role="button" tabindex="0" aria-pressed="false">
-                    <span class="exception-icon" aria-hidden="true">🤖</span>
-                    <span id="lblRobot" class="exception-label">Robot</span>
-                    <input type="checkbox" id="robotMode" class="exception-check" tabindex="-1" aria-hidden="true">
-                </div>
-                <div class="aritma-wrapper exception-option" onclick="toggleException('aritma')" onkeydown="handleExceptionKey(event, 'aritma')" role="button" tabindex="0" aria-pressed="false">
-                    <span class="exception-icon" aria-hidden="true">💧</span>
-                    <span id="lblAritma" class="exception-label">Arıtma</span>
-                    <input type="checkbox" id="aritmaMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
             </div>
         </div>
