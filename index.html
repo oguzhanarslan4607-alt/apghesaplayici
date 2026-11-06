@@ -492,26 +492,14 @@
         75000: 2, 85000: 6, 90000: 9, 95000: 13, 100000: 16, 105000: 19
     };
 
-    // 💧 ARITMA KURALLARI (M5 ve U Serisi Birleştirildi)
+    // 💧 ARITMA KURALLARI
     const A_RULES = {
-        26000: 2,  // U Serisi
-        26500: 2,  // M5 Serisi
-        28000: 5,  // U Serisi
-        29000: 5,  // M5 Serisi
-        31000: 8,  // U Serisi
-        32000: 8,  // M5 Serisi (Aynı zamanda U serisinde 13)
-        // NOT: 32000 M5'te 8 taksit, U'da 13 taksit. Şu an kod her ikisinde 13 olarak algılar eğer aynı anahtarı üzerine yazarsak.
-        // Güvenli olması için M5 verisini 32001 mi yapalım yoksa U verisini mi kullanalım? 
-        // Çakışmayı önlemek için 32000 U Serisindeki daha yüksek olan 13 taksiti baza aldım.
-        33000: 13, // M5 Serisi
-        34000: 16, // U Serisi
-        35000: 16, // M5 Serisi
-        36000: 19, // U Serisi
-        37000: 19  // M5 Serisi
+        35000: 2,
+        36000: 5,
+        39000: 8,
+        42000: 13,
+        44000: 16
     };
-    // 32.000 TL M5'te 1+7 (8 taksit), U'da 1+12 (13 taksit). 
-    A_RULES[32000] = 8; // Önce M5 ekledik
-    A_RULES[32001] = 13; // U serisi çakışmasını önlemek için 32001 dedik. 
 
     // --- YARDIMCILAR ---
     const fmt = n => n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
