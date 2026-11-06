@@ -343,10 +343,15 @@
                     <span id="lblRobot" class="exception-label">Robot</span>
                     <input type="checkbox" id="robotMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
-                <div class="aritma-wrapper exception-option" onclick="toggleException('aritma')" onkeydown="handleExceptionKey(event, 'aritma')" role="button" tabindex="0" aria-pressed="false">
+                <div class="aritma-m5-wrapper exception-option" onclick="toggleException('aritmaM5')" onkeydown="handleExceptionKey(event, 'aritmaM5')" role="button" tabindex="0" aria-pressed="false">
                     <span class="exception-icon" aria-hidden="true">💧</span>
-                    <span id="lblAritma" class="exception-label">Arıtma</span>
-                    <input type="checkbox" id="aritmaMode" class="exception-check" tabindex="-1" aria-hidden="true">
+                    <span id="lblAritmaM5" class="exception-label">M5 Arıtma</span>
+                    <input type="checkbox" id="aritmaM5Mode" class="exception-check" tabindex="-1" aria-hidden="true">
+                </div>
+                <div class="aritma-wrapper exception-option" onclick="toggleException('aritmaDuz')" onkeydown="handleExceptionKey(event, 'aritmaDuz')" role="button" tabindex="0" aria-pressed="false">
+                    <span class="exception-icon" aria-hidden="true">💧</span>
+                    <span id="lblAritmaDuz" class="exception-label">Düz Arıtma</span>
+                    <input type="checkbox" id="aritmaDuzMode" class="exception-check" tabindex="-1" aria-hidden="true">
                 </div>
                 <div class="klima-wrapper exception-option" onclick="toggleException('klima')" onkeydown="handleExceptionKey(event, 'klima')" role="button" tabindex="0" aria-pressed="false">
                     <span class="exception-icon" aria-hidden="true">❄️</span>
@@ -374,7 +379,8 @@
                 <span id="badgeKlimaWifi" class="klima-badge">KLİMA WI-FI</span>
                 <span id="badgeDiamond" class="diamond-badge">DIAMOND</span>
                 <span id="badgeRobot" class="robot-badge">ROBOT</span>
-                <span id="badgeAritma" class="aritma-badge">ARITMA</span>
+        <span id="badgeAritmaM5" class="aritma-badge">M5 ARITMA</span>
+        <span id="badgeAritmaDuz" class="aritma-badge">DÜZ ARITMA</span>
             </h3>
             <div class="table-container">
                 <table id="tblLeft">
@@ -493,12 +499,19 @@
     };
 
     // 💧 ARITMA KURALLARI
-    const A_RULES = {
+    const A_M5_RULES = {
         35000: 2,
         36000: 5,
         39000: 8,
         42000: 13,
         44000: 16
+    };
+    const A_DUZ_RULES = {
+        32000: 2,
+        34000: 5,
+        37000: 8,
+        40000: 13,
+        42000: 16
     };
 
     // --- YARDIMCILAR ---
@@ -544,23 +557,28 @@
         let chkKlimaWifi = document.getElementById('klimaWifiMode');
         let chkDiamond = document.getElementById('diamondMode');
         let chkRobot = document.getElementById('robotMode');
-        let chkAritma = document.getElementById('aritmaMode');
+        let chkAritmaM5 = document.getElementById('aritmaM5Mode');
+        let chkAritmaDuz = document.getElementById('aritmaDuzMode');
 
         if(type === 'klima') {
             chkKlima.checked = !chkKlima.checked;
-            if(chkKlima.checked) { chkKlimaWifi.checked = false; chkDiamond.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
+            if(chkKlima.checked) { chkKlimaWifi.checked = false; chkDiamond.checked = false; chkRobot.checked = false; chkAritmaM5.checked = false; chkAritmaDuz.checked = false; }
         } else if(type === 'klimaWifi') {
             chkKlimaWifi.checked = !chkKlimaWifi.checked;
-            if(chkKlimaWifi.checked) { chkKlima.checked = false; chkDiamond.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
+            if(chkKlimaWifi.checked) { chkKlima.checked = false; chkDiamond.checked = false; chkRobot.checked = false; chkAritmaM5.checked = false; chkAritmaDuz.checked = false; }
         } else if(type === 'diamond') {
             chkDiamond.checked = !chkDiamond.checked;
-            if(chkDiamond.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkRobot.checked = false; chkAritma.checked = false; }
+            if(chkDiamond.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkRobot.checked = false; chkAritmaM5.checked = false; chkAritmaDuz.checked = false; }
         } else if(type === 'robot') {
             chkRobot.checked = !chkRobot.checked;
-            if(chkRobot.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkDiamond.checked = false; chkAritma.checked = false; }
-        } else if(type === 'aritma') {
-            chkAritma.checked = !chkAritma.checked;
-            if(chkAritma.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkDiamond.checked = false; chkRobot.checked = false; }
+            if(chkRobot.checked) { chkKlima.checked = false; chkKlimaWifi.checked = false; chkDiamond.checked = false; chkAritmaM5.checked = false; chkAritmaDuz.checked = false; }
+        } else if(type === 'aritmaM5' || type === 'aritmaDuz') {
+            const selected = type === 'aritmaM5' ? chkAritmaM5 : chkAritmaDuz;
+            selected.checked = !selected.checked;
+            if(selected.checked) {
+                chkKlima.checked = false; chkKlimaWifi.checked = false; chkDiamond.checked = false; chkRobot.checked = false;
+                (type === 'aritmaM5' ? chkAritmaDuz : chkAritmaM5).checked = false;
+            }
         }
         calcLeft();
     }
@@ -573,7 +591,9 @@
         const klimaWifi = document.getElementById('klimaWifiMode').checked;
         const diamond = document.getElementById('diamondMode').checked;
         const robot = document.getElementById('robotMode').checked;
-        const aritma = document.getElementById('aritmaMode').checked;
+        const aritmaM5 = document.getElementById('aritmaM5Mode').checked;
+        const aritmaDuz = document.getElementById('aritmaDuzMode').checked;
+        const aritma = aritmaM5 || aritmaDuz;
         const tbody = document.querySelector('#tblLeft tbody');
         
         // Etiket Renklendirmeleri
@@ -581,14 +601,16 @@
         document.getElementById('lblKlimaWifi').classList.toggle('label-active-wifi', klimaWifi);
         document.getElementById('lblDiamond').classList.toggle('label-active-diamond', diamond);
         document.getElementById('lblRobot').classList.toggle('label-active-robot', robot);
-        document.getElementById('lblAritma').classList.toggle('label-active-aritma', aritma);
+        document.getElementById('lblAritmaM5').classList.toggle('label-active-aritma', aritmaM5);
+        document.getElementById('lblAritmaDuz').classList.toggle('label-active-aritma', aritmaDuz);
 
         [
             ['.klima-wrapper', klima],
             ['.klima-wifi-wrapper', klimaWifi],
             ['.diamond-wrapper', diamond],
             ['.robot-wrapper', robot],
-            ['.aritma-wrapper', aritma]
+            ['.aritma-m5-wrapper', aritmaM5],
+            ['.aritma-wrapper', aritmaDuz]
         ].forEach(([selector, active]) => {
             const option = document.querySelector(selector);
             option.classList.toggle('option-active', active);
@@ -600,16 +622,12 @@
         document.getElementById('badgeKlimaWifi').style.display='none';
         document.getElementById('badgeDiamond').style.display='none';
         document.getElementById('badgeRobot').style.display='none';
-        document.getElementById('badgeAritma').style.display='none';
+        document.getElementById('badgeAritmaM5').style.display='none';
+        document.getElementById('badgeAritmaDuz').style.display='none';
         
         let count = 0;
         if(ciro>0) {
-            // U serisindeki 32.000 çakışmasını çözmek için ufak bir hile:
             let checkCiro = ciro;
-            if(aritma && ciro === 32000) {
-                // Eğer U serisi 13 taksit isteniyorsa kullanıcı 32001 girmeli veya sorabiliriz.
-                // Şimdilik 8 taksit olan M5 baz alınacak.
-            }
 
             if(klima && K_RULES[checkCiro]) { 
                 count = K_RULES[checkCiro]; document.getElementById('badgeKlima').style.display='inline-block'; 
@@ -623,8 +641,11 @@
             else if(robot && R_RULES[checkCiro]) { 
                 count = R_RULES[checkCiro]; document.getElementById('badgeRobot').style.display='inline-block'; 
             }
-            else if(aritma && A_RULES[checkCiro]) { 
-                count = A_RULES[checkCiro]; document.getElementById('badgeAritma').style.display='inline-block'; 
+            else if(aritmaM5 && A_M5_RULES[checkCiro]) {
+                count = A_M5_RULES[checkCiro]; document.getElementById('badgeAritmaM5').style.display='inline-block';
+            }
+            else if(aritmaDuz && A_DUZ_RULES[checkCiro]) {
+                count = A_DUZ_RULES[checkCiro]; document.getElementById('badgeAritmaDuz').style.display='inline-block';
             }
             else if(!klima && !klimaWifi && !diamond && !robot && !aritma && RULES[checkCiro]) {
                 count = RULES[checkCiro]; 
